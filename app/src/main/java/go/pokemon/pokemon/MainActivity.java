@@ -1,19 +1,45 @@
 package go.pokemon.pokemon;
 
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import go.pokemon.pokemon.lib.Prefs;
+import go.pokemon.pokemon.lib.Utils;
+import go.pokemon.pokemon.service.SensorOverlayService;
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+	private static final int REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS = 404;
+
+	private SensorManager mSensorManager;
+	private Sensor mSensor;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		setUpViews();
+	}
+
+	private void setUpViews() {
 		EditText editTextSensorThreshold = (EditText) findViewById(R.id.editText_sensor_threshold);
 		editTextSensorThreshold
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD)));
@@ -225,5 +251,59 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 		});
+	}
+
+	private void checkToEnableOverlay() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+			Toast.makeText(this, "Enable drawing over other apps", Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+					Uri.parse("package:" + getPackageName()));
+			startActivityForResult(intent, REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS);
+			return;
+		}
+		startSensorListening();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		checkToEnableOverlay();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS) {
+			checkToEnableOverlay();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		stopSensorListening();
+	}
+
+	private void startSensorListening() {
+		startService(new Intent(this, SensorOverlayService.class));
+		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+
+	private void stopSensorListening() {
+		stopService(new Intent(this, SensorOverlayService.class));
+		mSensorManager.unregisterListener(this, mSensor);
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent sensorEvent) {
+		Intent intent = new Intent(this, SensorOverlayService.class);
+		intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
+		startService(intent);
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int i) {
 	}
 }

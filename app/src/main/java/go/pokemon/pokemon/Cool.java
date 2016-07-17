@@ -1,6 +1,7 @@
 package go.pokemon.pokemon;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,6 +15,10 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import go.pokemon.pokemon.lib.Constant;
+import go.pokemon.pokemon.lib.Prefs;
+import go.pokemon.pokemon.lib.Utils;
+import go.pokemon.pokemon.service.SensorOverlayService;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -92,6 +97,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						mSensorManager.registerListener(Cool.this, mSensor,
 								SensorManager.SENSOR_DELAY_NORMAL);
+						mContext.startService(new Intent(mContext, SensorOverlayService.class));
 					}
 				});
 
@@ -103,6 +109,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						super.beforeHookedMethod(param);
 
 						mSensorManager.unregisterListener(Cool.this, mSensor);
+						mContext.stopService(new Intent(mContext, SensorOverlayService.class));
 					}
 				});
 
@@ -141,13 +148,17 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					isPositionChanged = true;
 				}
 
-				float calibratedY = sensorY - 3; // For hand-held comfort
+				float calibratedY = sensorY - 5; // For hand-held comfort
 				if (calibratedY > mSensorThreshold || calibratedY < -mSensorThreshold) {
 					mPlayerLatitude -= mMoveDistanceLatitude *
 							(calibratedY > 0 ? calibratedY - mSensorThreshold :
 									calibratedY + mSensorThreshold);
 					isPositionChanged = true;
 				}
+
+				Intent intent = new Intent(mContext, SensorOverlayService.class);
+				intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
+				mContext.startService(intent);
 
 				if (isPositionChanged) {
 					gotoPlace(mPlayerLatitude, mPlayerLongitude);

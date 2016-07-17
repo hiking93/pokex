@@ -1,4 +1,4 @@
-package go.pokemon.pokemon;
+package go.pokemon.pokemon.lib;
 
 import android.content.Context;
 import android.content.SharedPreferences;

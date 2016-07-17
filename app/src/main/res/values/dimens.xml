@@ -1,5 +1,31 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+	<!-- Default screen margins, per the Android Design guidelines. -->
+	<dimen name="activity_horizontal_margin">16dp</dimen>
+	<dimen name="activity_vertical_margin">16dp</dimen>
+
+	<!-- Compact dimens -->
+	<dimen name="margin_xxsmall">2dp</dimen>
+	<dimen name="margin_xsmall">4dp</dimen>
+	<dimen name="margin_small">8dp</dimen>
+	<dimen name="margin_smedium">12dp</dimen>
+	<dimen name="margin_medium">16dp</dimen>
+	<dimen name="margin_large">24dp</dimen>
+	<dimen name="margin_dialog">24dp</dimen>
+	<dimen name="margin_xlarge">32dp</dimen>
+
+	<!-- Responsive Margins -->
+	<dimen name="margin_page">16dp</dimen>
+	<dimen name="margin_page_small">8dp</dimen>
+	<dimen name="margin_page_responsive">0dp</dimen>
+	<dimen name="margin_page_half">8dp</dimen>
+	<dimen name="drawer_width">320dp</dimen>
+
+	<!-- Negative dimens -->
+	<dimen name="margin_neg_xxsmall">-2dp</dimen>
+	<dimen name="margin_neg_xsmall">-4dp</dimen>
+	<dimen name="margin_neg_small">-8dp</dimen>
+	<dimen name="margin_neg_smedium">-12dp</dimen>
+	<dimen name="margin_neg_medium">-16dp</dimen>
+	<dimen name="margin_neg_large">-24dp</dimen>
+	<dimen name="margin_neg_xlarge">-32dp</dimen>
 </resources>

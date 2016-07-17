@@ -1,4 +1,4 @@
-package go.pokemon.pokemon;
+package go.pokemon.pokemon.lib;
 
 /**
  * Constants
