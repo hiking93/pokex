@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -21,136 +22,148 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  * Created by pauline on 7/15/16.
  */
 public class Cool implements IXposedHookLoadPackage, SensorEventListener {
-    private Context mContext;
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-    private XSharedPreferences mSharedPreferences;
-    //    private SharedPreferences.Editor mEditor;
-    private Object mThisObject;
-    private Location mLocation;
 
-    private double mPlayerLatitude, mPlayerLongitude;
-    private double mSensorThreshold;
-    private double mMoveDistanceLatitude, mMoveDistanceLongitude;
-    private long mLastUpdate;
-    private int mMinimumTimeInterval;
-    private int[] mWhateverArray;
+	private Context mContext;
+	private SensorManager mSensorManager;
+	private Sensor mSensor;
+	private XSharedPreferences mSharedPreferences;
+	private Object mThisObject;
+	private Location mLocation;
 
+	private double mPlayerLatitude, mPlayerLongitude;
+	private double mSensorThreshold;
+	private double mMoveDistanceLatitude, mMoveDistanceLongitude;
+	private long mLastUpdate;
+	private int mMinimumTimeInterval;
+	private int[] mWhateverArray;
 
-    @Override
-    public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals("com.nianticlabs.pokemongo")) return;
+	@Override
+	public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+		Log.d("PokemonDebug", "handleLoadPackage: " + lpparam.packageName);
 
-        findAndHookConstructor("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, Context.class, long.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
+		if (!lpparam.packageName.equals("com.nianticlabs.pokemongo")) {
+			return;
+		}
 
-                mContext = (Context) param.args[0];
+		findAndHookConstructor("com.nianticlabs.nia.location.NianticLocationManager",
+				lpparam.classLoader, Context.class, long.class, new XC_MethodHook() {
 
-                mSharedPreferences = new XSharedPreferences("go.pokemon.pokemon", "pokemon");
-//                mEditor = mContext.getSharedPreferences("pokemon", Context.MODE_WORLD_WRITEABLE | Context.MODE_WORLD_READABLE).edit();
+					@Override
+					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+						super.afterHookedMethod(param);
+						Log.d("PokemonDebug", "Constructor hooked");
 
-                mSensorThreshold = Double.parseDouble(mSharedPreferences.getString("sensor_threshold", "1.5"));
-                mMinimumTimeInterval = Integer.parseInt(mSharedPreferences.getString("minimum_time_interval", "250"));
-                mMoveDistanceLatitude = Double.parseDouble(mSharedPreferences.getString("move_distance_latitude", "0.00005"));
-                mMoveDistanceLongitude = Double.parseDouble(mSharedPreferences.getString("move_distance_longitude", "0.00005"));
-                mPlayerLatitude = Double.parseDouble(mSharedPreferences.getString("respawn_location_latitude", "40.7589"));
-                mPlayerLongitude = Double.parseDouble(mSharedPreferences.getString("respawn_location_longitude", "-73.9851"));
+						mContext = (Context) param.args[0];
 
-                mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-                mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            }
-        });
+						mSharedPreferences =
+								new XSharedPreferences("go.pokemon.pokemon", "pokemon");
 
-        findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, "onResume", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
+						mSensorThreshold = Double.parseDouble(
+								mSharedPreferences.getString("sensor_threshold", "3.0"));
+						mMinimumTimeInterval = Integer.parseInt(
+								mSharedPreferences.getString("minimum_time_interval", "250"));
+						mMoveDistanceLatitude = Double.parseDouble(
+								mSharedPreferences.getString("move_distance_latitude", "0.00005"));
+						mMoveDistanceLongitude = Double.parseDouble(
+								mSharedPreferences.getString("move_distance_longitude", "0.00005"));
+						mPlayerLatitude = Double.parseDouble(mSharedPreferences
+								.getString("respawn_location_latitude", "40.7589"));
+						mPlayerLongitude = Double.parseDouble(mSharedPreferences
+								.getString("respawn_location_longitude", "-73.9851"));
 
-                mSensorManager.registerListener(Cool.this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            }
-        });
+						mSensorManager =
+								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+						mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+					}
+				});
 
-        findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, "onPause", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
+		findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager",
+				lpparam.classLoader, "onResume", new XC_MethodHook() {
 
-//                Log.i("fuck", "onPause " + String.valueOf(mPlayerLatitude) + "/" + String.valueOf(mPlayerLongitude));
-//                mEditor.putString("respawn_location_latitude", String.valueOf(mPlayerLatitude));
-//                mEditor.putString("respawn_location_longitude", String.valueOf(mPlayerLongitude));
-//                mEditor.apply();
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						super.beforeHookedMethod(param);
+						Log.d("PokemonDebug", "onResume");
 
-                mSensorManager.unregisterListener(Cool.this, mSensor);
-            }
-        });
+						mSensorManager.registerListener(Cool.this, mSensor,
+								SensorManager.SENSOR_DELAY_NORMAL);
+					}
+				});
 
-        findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager", lpparam.classLoader, "locationUpdate", Location.class, int[].class, new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                Location location = (Location) param.args[0];
-                if (location != null) {
-                    mLocation = location;
-                    mThisObject = param.thisObject;
-                    mWhateverArray = (int[]) param.args[1];
-                }
+		findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager",
+				lpparam.classLoader, "onPause", new XC_MethodHook() {
 
-                return null;
-            }
-        });
-    }
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						super.beforeHookedMethod(param);
+						Log.d("PokemonDebug", "onPause");
 
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        Sensor sensor = sensorEvent.sensor;
-        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float x = sensorEvent.values[0];
-            float y = sensorEvent.values[1];
+						mSensorManager.unregisterListener(Cool.this, mSensor);
+					}
+				});
 
-            long currentTime = System.currentTimeMillis();
-            if ((currentTime - mLastUpdate) > mMinimumTimeInterval) {
-                mLastUpdate = currentTime;
+		findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager",
+				lpparam.classLoader, "locationUpdate", Location.class, int[].class,
+				new XC_MethodReplacement() {
 
-                boolean isChange = false;
-                if (x > mSensorThreshold) {
-                    mPlayerLongitude -= mMoveDistanceLongitude;
-                    isChange = true;
-                } else if (x < -mSensorThreshold) {
-                    mPlayerLongitude += mMoveDistanceLongitude;
-                    isChange = true;
-                }
+					@Override
+					protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+						Log.d("PokemonDebug", "locationUpdate");
 
-                if (y > mSensorThreshold) {
-                    mPlayerLatitude -= mMoveDistanceLatitude;
-                    isChange = true;
-                } else if (y < -mSensorThreshold) {
-                    mPlayerLatitude += mMoveDistanceLatitude;
-                    isChange = true;
-                }
+						Location location = (Location) param.args[0];
+						if (location != null) {
+							mLocation = location;
+							mThisObject = param.thisObject;
+							mWhateverArray = (int[]) param.args[1];
+						}
+						return null;
+					}
+				});
+	}
 
-                if (isChange) {
-                    gotoPlace(mPlayerLatitude, mPlayerLongitude);
-                }
-            }
-        }
-    }
+	@Override
+	public void onSensorChanged(SensorEvent sensorEvent) {
+		Sensor sensor = sensorEvent.sensor;
+		if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			float sensorX = sensorEvent.values[0];
+			float sensorY = sensorEvent.values[1];
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
+			long currentTime = System.currentTimeMillis();
+			if ((currentTime - mLastUpdate) > mMinimumTimeInterval) {
+				mLastUpdate = currentTime;
 
-    }
+				boolean isPositionChanged = false;
+				if (sensorX > mSensorThreshold || sensorX < -mSensorThreshold) {
+					mPlayerLongitude += mMoveDistanceLongitude *
+							(sensorX > 0 ? sensorX - mSensorThreshold : sensorX + mSensorThreshold);
+					isPositionChanged = true;
+				}
 
-    private void gotoPlace(double latitude, double longitude) {
-        if (mLocation == null || mThisObject == null || mWhateverArray == null) return;
+				if (sensorY > mSensorThreshold || sensorY < -mSensorThreshold) {
+					mPlayerLatitude += mMoveDistanceLatitude *
+							(sensorY > 0 ? sensorY - mSensorThreshold : sensorY + mSensorThreshold);
+					isPositionChanged = true;
+				}
 
-        mLocation.setLatitude(latitude);
-        mLocation.setLongitude(longitude);
-        XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray, mContext);
+				if (isPositionChanged) {
+					gotoPlace(mPlayerLatitude, mPlayerLongitude);
+				}
+			}
+		}
+	}
 
-//        Log.i("fuck", "gotoPlace " + String.valueOf(mPlayerLatitude) + "/" + String.valueOf(mPlayerLongitude));
-//        mEditor.putString("respawn_location_latitude", String.valueOf(mPlayerLatitude));
-//        mEditor.putString("respawn_location_longitude", String.valueOf(mPlayerLongitude));
-//        mEditor.apply();
-    }
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int i) {
+	}
+
+	private void gotoPlace(double latitude, double longitude) {
+		if (mLocation == null || mThisObject == null || mWhateverArray == null) {
+			return;
+		}
+
+		mLocation.setLatitude(latitude);
+		mLocation.setLongitude(longitude);
+		XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray,
+				mContext);
+	}
 }
