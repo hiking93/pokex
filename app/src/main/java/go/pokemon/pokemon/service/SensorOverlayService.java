@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,10 +46,6 @@ public class SensorOverlayService extends Service {
 		ButterKnife.setDebug(true);
 		ButterKnife.bind(this, mRootView);
 		setUpViews();
-
-		Log.d("Hiking", "mSensorXTextView = " + mSensorXTextView);
-		mSensorXTextView = (TextView) mRootView.findViewById(R.id.textView_sensor_x);
-		mSensorYTextView = (TextView) mRootView.findViewById(R.id.textView_sensor_y);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package go.pokemon.pokemon;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -8,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.util.Log;
-import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -58,8 +58,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "Constructor hooked");
 						mContext = (Context) param.args[0];
-						Toast.makeText(mContext, "Sensor module loaded.", Toast.LENGTH_SHORT)
-								.show();
 
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mMinimumTimeInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
@@ -95,9 +93,14 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 						super.beforeHookedMethod(param);
 
+						Log.d(Constant.TAG, "onResume");
+
 						mSensorManager.registerListener(Cool.this, mSensor,
 								SensorManager.SENSOR_DELAY_NORMAL);
-						mContext.startService(new Intent(mContext, SensorOverlayService.class));
+
+						Intent intent = new Intent();
+						intent.setComponent(getSensorOverlayServiceComponent());
+						mContext.startService(intent);
 					}
 				});
 
@@ -108,8 +111,12 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 						super.beforeHookedMethod(param);
 
+						Log.d(Constant.TAG, "onPause");
+
 						mSensorManager.unregisterListener(Cool.this, mSensor);
-						mContext.stopService(new Intent(mContext, SensorOverlayService.class));
+						Intent intent = new Intent();
+						intent.setComponent(getSensorOverlayServiceComponent());
+						mContext.stopService(intent);
 					}
 				});
 
@@ -156,8 +163,9 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					isPositionChanged = true;
 				}
 
-				Intent intent = new Intent(mContext, SensorOverlayService.class);
+				Intent intent = new Intent();
 				intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
+				intent.setComponent(getSensorOverlayServiceComponent());
 				mContext.startService(intent);
 
 				if (isPositionChanged) {
@@ -165,6 +173,10 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				}
 			}
 		}
+	}
+
+	private ComponentName getSensorOverlayServiceComponent() {
+		return new ComponentName("go.pokemon.pokemon", ".service.SensorOverlayService");
 	}
 
 	@Override

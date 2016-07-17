@@ -33,7 +33,7 @@
 			android:text="Sensor update interval (ms)"/>
 
 		<EditText
-			android:id="@+id/editText_minimum_time_interval"
+			android:id="@+id/editText_update_interval"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:inputType="numberDecimal"
@@ -51,7 +51,7 @@
 			android:orientation="horizontal">
 
 			<EditText
-				android:id="@+id/editText_move_distance_latitude"
+				android:id="@+id/editText_move_latitude_multiplier"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
@@ -60,7 +60,7 @@
 				android:maxLines="1"/>
 
 			<EditText
-				android:id="@+id/editText_move_distance_longitude"
+				android:id="@+id/editText_move_longitude_multiplier"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
@@ -81,7 +81,7 @@
 			android:orientation="horizontal">
 
 			<EditText
-				android:id="@+id/editText_respawn_location_latitude"
+				android:id="@+id/editText_respawn_latitude"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
@@ -90,7 +90,7 @@
 				android:maxLines="1"/>
 
 			<EditText
-				android:id="@+id/editText_respawn_location_longitude"
+				android:id="@+id/editText_respawn_longitude"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"

@@ -17,11 +17,20 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.lib.Utils;
 import go.pokemon.pokemon.service.SensorOverlayService;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+	@BindView(R.id.editText_sensor_threshold) EditText mSensorThresholdEditText;
+	@BindView(R.id.editText_update_interval) EditText mUpdateIntervalEditText;
+	@BindView(R.id.editText_move_latitude_multiplier) EditText mMoveLatitudeMultiplierEditText;
+	@BindView(R.id.editText_move_longitude_multiplier) EditText mMoveLongitudeMultiplierEditText;
+	@BindView(R.id.editText_respawn_latitude) EditText mRespawnLatitudeEditText;
+	@BindView(R.id.editText_respawn_longitude) EditText mRespawnLongitudeEditText;
 
 	private static final int REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS = 404;
 
@@ -36,14 +45,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+		ButterKnife.setDebug(true);
+		ButterKnife.bind(this);
 		setUpViews();
 	}
 
 	private void setUpViews() {
-		EditText editTextSensorThreshold = (EditText) findViewById(R.id.editText_sensor_threshold);
-		editTextSensorThreshold
+		mSensorThresholdEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD)));
-		editTextSensorThreshold.addTextChangedListener(new TextWatcher() {
+		mSensorThresholdEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -63,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextSensorThreshold.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mSensorThresholdEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
@@ -74,11 +84,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			}
 		});
 
-		EditText editTextMinimumTimeInterval =
-				(EditText) findViewById(R.id.editText_minimum_time_interval);
-		editTextMinimumTimeInterval
+		mUpdateIntervalEditText
 				.setText(Utils.toDecimalString(Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL)));
-		editTextMinimumTimeInterval.addTextChangedListener(new TextWatcher() {
+		mUpdateIntervalEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextMinimumTimeInterval.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mUpdateIntervalEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
@@ -112,11 +120,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			}
 		});
 
-		EditText editTextMoveDistanceLatitude =
-				(EditText) findViewById(R.id.editText_move_distance_latitude);
-		editTextMoveDistanceLatitude.setText(
+		mMoveLatitudeMultiplierEditText.setText(
 				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LAT)));
-		editTextMoveDistanceLatitude.addTextChangedListener(new TextWatcher() {
+		mMoveLatitudeMultiplierEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -136,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextMoveDistanceLatitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mMoveLatitudeMultiplierEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
@@ -147,11 +153,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			}
 		});
 
-		EditText editTextMoveDistanceLongitude =
-				(EditText) findViewById(R.id.editText_move_distance_longitude);
-		editTextMoveDistanceLongitude.setText(
+		mMoveLongitudeMultiplierEditText.setText(
 				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LONG)));
-		editTextMoveDistanceLongitude.addTextChangedListener(new TextWatcher() {
+		mMoveLongitudeMultiplierEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -171,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextMoveDistanceLongitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mMoveLongitudeMultiplierEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
@@ -182,11 +186,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			}
 		});
 
-		EditText editTextRespawnLocationLatitude =
-				(EditText) findViewById(R.id.editText_respawn_location_latitude);
-		editTextRespawnLocationLatitude
+		mRespawnLatitudeEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LAT)));
-		editTextRespawnLocationLatitude.addTextChangedListener(new TextWatcher() {
+		mRespawnLatitudeEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -206,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextRespawnLocationLatitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mRespawnLatitudeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
@@ -217,11 +219,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			}
 		});
 
-		EditText editTextRespawnLocationLongitude =
-				(EditText) findViewById(R.id.editText_respawn_location_longitude);
-		editTextRespawnLocationLongitude
+		mRespawnLongitudeEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LONG)));
-		editTextRespawnLocationLongitude.addTextChangedListener(new TextWatcher() {
+		mRespawnLongitudeEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void afterTextChanged(Editable editable) {
 			}
 		});
-		editTextRespawnLocationLongitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		mRespawnLongitudeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
