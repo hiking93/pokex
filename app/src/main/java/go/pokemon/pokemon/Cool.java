@@ -11,7 +11,6 @@ import android.util.Log;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -19,14 +18,15 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 /**
- * Created by pauline on 7/15/16.
+ * Hook the methods!
+ *
+ * @author Created by pauline on 7/15/16.
  */
 public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 	private Context mContext;
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
-	private XSharedPreferences mSharedPreferences;
 	private Object mThisObject;
 	private Location mLocation;
 
@@ -39,8 +39,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 	@Override
 	public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-		Log.d("PokemonDebug", "handleLoadPackage: " + lpparam.packageName);
-
 		if (!lpparam.packageName.equals("com.nianticlabs.pokemongo")) {
 			return;
 		}
@@ -51,25 +49,24 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					@Override
 					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 						super.afterHookedMethod(param);
-						Log.d("PokemonDebug", "Constructor hooked");
+						Log.d(Constant.TAG, "Constructor hooked");
 
 						mContext = (Context) param.args[0];
 
-						mSharedPreferences =
-								new XSharedPreferences("go.pokemon.pokemon", "pokemon");
-
-						mSensorThreshold = Double.parseDouble(
-								mSharedPreferences.getString("sensor_threshold", "3.0"));
-						mMinimumTimeInterval = Integer.parseInt(
-								mSharedPreferences.getString("minimum_time_interval", "250"));
-						mMoveDistanceLatitude = Double.parseDouble(
-								mSharedPreferences.getString("move_distance_latitude", "0.00005"));
-						mMoveDistanceLongitude = Double.parseDouble(
-								mSharedPreferences.getString("move_distance_longitude", "0.00005"));
-						mPlayerLatitude = Double.parseDouble(mSharedPreferences
-								.getString("respawn_location_latitude", "40.7589"));
-						mPlayerLongitude = Double.parseDouble(mSharedPreferences
-								.getString("respawn_location_longitude", "-73.9851"));
+						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
+						mMinimumTimeInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
+						mMoveDistanceLatitude =
+								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
+						mMoveDistanceLongitude =
+								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LONG);
+						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
+						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
+						Log.d(Constant.TAG, "mSensorThreshold = " + mSensorThreshold +
+								"\nmMinimumTimeInterval = " + mMinimumTimeInterval +
+								"\nmMoveDistanceLatitude = " + mMoveDistanceLatitude +
+								"\nmMoveDistanceLongitude = " + mMoveDistanceLongitude +
+								"\nmPlayerLatitude = " + mPlayerLatitude +
+								"\nmPlayerLongitude = " + mPlayerLongitude);
 
 						mSensorManager =
 								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -83,7 +80,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					@Override
 					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 						super.beforeHookedMethod(param);
-						Log.d("PokemonDebug", "onResume");
 
 						mSensorManager.registerListener(Cool.this, mSensor,
 								SensorManager.SENSOR_DELAY_NORMAL);
@@ -96,7 +92,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					@Override
 					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 						super.beforeHookedMethod(param);
-						Log.d("PokemonDebug", "onPause");
 
 						mSensorManager.unregisterListener(Cool.this, mSensor);
 					}
@@ -108,8 +103,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 					@Override
 					protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-						Log.d("PokemonDebug", "locationUpdate");
-
 						Location location = (Location) param.args[0];
 						if (location != null) {
 							mLocation = location;
@@ -131,17 +124,19 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 			long currentTime = System.currentTimeMillis();
 			if ((currentTime - mLastUpdate) > mMinimumTimeInterval) {
 				mLastUpdate = currentTime;
-
 				boolean isPositionChanged = false;
+
 				if (sensorX > mSensorThreshold || sensorX < -mSensorThreshold) {
-					mPlayerLongitude += mMoveDistanceLongitude *
+					mPlayerLongitude -= mMoveDistanceLongitude *
 							(sensorX > 0 ? sensorX - mSensorThreshold : sensorX + mSensorThreshold);
 					isPositionChanged = true;
 				}
 
-				if (sensorY > mSensorThreshold || sensorY < -mSensorThreshold) {
-					mPlayerLatitude += mMoveDistanceLatitude *
-							(sensorY > 0 ? sensorY - mSensorThreshold : sensorY + mSensorThreshold);
+				float calibratedY = sensorY - 8; // For hand-held comfort
+				if (calibratedY > mSensorThreshold || calibratedY < -mSensorThreshold) {
+					mPlayerLatitude -= mMoveDistanceLatitude *
+							(calibratedY > 0 ? calibratedY - mSensorThreshold :
+									calibratedY + mSensorThreshold);
 					isPositionChanged = true;
 				}
 

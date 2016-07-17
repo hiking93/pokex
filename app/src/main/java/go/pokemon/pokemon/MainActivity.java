@@ -1,7 +1,5 @@
 package go.pokemon.pokemon;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -15,12 +13,9 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		final SharedPreferences sharedPreferences = getSharedPreferences("pokemon",
-				Context.MODE_WORLD_WRITEABLE | Context.MODE_WORLD_READABLE);
-		final SharedPreferences.Editor editor = sharedPreferences.edit();
-
 		EditText editTextSensorThreshold = (EditText) findViewById(R.id.editText_sensor_threshold);
-		editTextSensorThreshold.setText(sharedPreferences.getString("sensor_threshold", "3.0"));
+		editTextSensorThreshold
+				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD)));
 		editTextSensorThreshold.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -29,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("sensor_threshold", charSequence.toString());
-				editor.apply();
+				Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
+						Float.parseFloat(charSequence.toString()));
 			}
 
 			@Override
@@ -41,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 		EditText editTextMinimumTimeInterval =
 				(EditText) findViewById(R.id.editText_minimum_time_interval);
 		editTextMinimumTimeInterval
-				.setText(sharedPreferences.getString("minimum_time_interval", "250"));
+				.setText(Utils.toDecimalString(Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL)));
 		editTextMinimumTimeInterval.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -50,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("minimum_time_interval", charSequence.toString());
-				editor.apply();
+				Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
+						Integer.parseInt(charSequence.toString()));
 			}
 
 			@Override
@@ -61,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
 		EditText editTextMoveDistanceLatitude =
 				(EditText) findViewById(R.id.editText_move_distance_latitude);
-		editTextMoveDistanceLatitude
-				.setText(sharedPreferences.getString("move_distance_latitude", "0.00005"));
+		editTextMoveDistanceLatitude.setText(
+				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LAT)));
 		editTextMoveDistanceLatitude.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -71,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("move_distance_latitude", charSequence.toString());
-				editor.apply();
+				Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
+						Float.parseFloat(charSequence.toString()));
 			}
 
 			@Override
@@ -82,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
 		EditText editTextMoveDistanceLongitude =
 				(EditText) findViewById(R.id.editText_move_distance_longitude);
-		editTextMoveDistanceLongitude
-				.setText(sharedPreferences.getString("move_distance_longitude", "0.00005"));
+		editTextMoveDistanceLongitude.setText(
+				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LONG)));
 		editTextMoveDistanceLongitude.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -92,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("move_distance_longitude", charSequence.toString());
-				editor.apply();
+				Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
+						Float.parseFloat(charSequence.toString()));
 			}
 
 			@Override
@@ -104,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 		EditText editTextRespawnLocationLatitude =
 				(EditText) findViewById(R.id.editText_respawn_location_latitude);
 		editTextRespawnLocationLatitude
-				.setText(sharedPreferences.getString("respawn_location_latitude", "40.7589"));
+				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LAT)));
 		editTextRespawnLocationLatitude.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -113,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("respawn_location_latitude", charSequence.toString());
-				editor.apply();
+				Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
+						Float.parseFloat(charSequence.toString()));
 			}
 
 			@Override
@@ -125,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 		EditText editTextRespawnLocationLongitude =
 				(EditText) findViewById(R.id.editText_respawn_location_longitude);
 		editTextRespawnLocationLongitude
-				.setText(sharedPreferences.getString("respawn_location_longitude", "-73.9851"));
+				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LONG)));
 		editTextRespawnLocationLongitude.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -134,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				editor.putString("respawn_location_longitude", charSequence.toString());
-				editor.apply();
+				Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
+						Float.parseFloat(charSequence.toString()));
 			}
 
 			@Override

@@ -1,85 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="go.pokemon.pokemon.MainActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sensor Threshold" />
-
-        <EditText
-            android:id="@+id/editText_sensor_threshold"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="go.pokemon.pokemon.MainActivity">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sensor update interval" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/editText_minimum_time_interval"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Sensor Threshold (m/s^2)"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Move distance multiplier (per m/s^2)" />
+		<EditText
+			android:id="@+id/editText_sensor_threshold"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="numberDecimal"
+			android:lines="1"
+			android:maxLines="1"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Sensor update interval (ms)"/>
 
-            <EditText
-                android:id="@+id/editText_move_distance_latitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+		<EditText
+			android:id="@+id/editText_minimum_time_interval"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="numberDecimal"
+			android:lines="1"
+			android:maxLines="1"/>
 
-            <EditText
-                android:id="@+id/editText_move_distance_longitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Move distance multiplier (long, lat) (per m/s^2)"/>
 
-        </LinearLayout>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Respawn location" />
+			<EditText
+				android:id="@+id/editText_move_distance_latitude"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:inputType="numberDecimal"
+				android:lines="1"
+				android:maxLines="1"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+			<EditText
+				android:id="@+id/editText_move_distance_longitude"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:inputType="numberDecimal"
+				android:lines="1"
+				android:maxLines="1"/>
 
-            <EditText
-                android:id="@+id/editText_respawn_location_latitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+		</LinearLayout>
 
-            <EditText
-                android:id="@+id/editText_respawn_location_longitude"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Respawn location (long, lat)"/>
 
-        </LinearLayout>
-    </LinearLayout>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<EditText
+				android:id="@+id/editText_respawn_location_latitude"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:inputType="numberDecimal"
+				android:lines="1"
+				android:maxLines="1"/>
+
+			<EditText
+				android:id="@+id/editText_respawn_location_longitude"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:inputType="numberDecimal"
+				android:lines="1"
+				android:maxLines="1"/>
+
+		</LinearLayout>
+	</LinearLayout>
 </ScrollView>
