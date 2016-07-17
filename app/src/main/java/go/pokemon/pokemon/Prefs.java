@@ -57,6 +57,13 @@ public class Prefs {
 		return mSharedPreferences.edit();
 	}
 
+	public static void setToDefault(Context context, String key) {
+		if (mSharedPreferences == null) {
+			init(context, false);
+		}
+		mSharedPreferences.edit().remove(key).apply();
+	}
+
 	public static int getIntValue(Object obj) {
 		int defVal;
 		if (obj instanceof Integer) {

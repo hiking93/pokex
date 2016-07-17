@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,12 +25,26 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
-						Float.parseFloat(charSequence.toString()));
+				if (!Utils.isFloat(charSequence)) {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD);
+				} else {
+					Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
+							Float.parseFloat(charSequence.toString()));
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextSensorThreshold.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_SENSOR_THRESHOLD)));
+				}
 			}
 		});
 
@@ -45,12 +60,29 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
-						Integer.parseInt(charSequence.toString()));
+				if (Utils.isInt(charSequence)) {
+					Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
+							Integer.parseInt(charSequence.toString()));
+				} else if (Utils.isFloat(charSequence)) {
+					Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
+							(int) Float.parseFloat(charSequence.toString()));
+				} else {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextMinimumTimeInterval.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getInt(view.getContext(), Prefs.KEY_UPDATE_INTERVAL)));
+				}
 			}
 		});
 
@@ -66,12 +98,26 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
-						Float.parseFloat(charSequence.toString()));
+				if (!Utils.isFloat(charSequence)) {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT);
+				} else {
+					Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
+							Float.parseFloat(charSequence.toString()));
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextMoveDistanceLatitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_MOVE_MULTIPLIER_LAT)));
+				}
 			}
 		});
 
@@ -87,12 +133,26 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
-						Float.parseFloat(charSequence.toString()));
+				if (!Utils.isFloat(charSequence)) {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG);
+				} else {
+					Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
+							Float.parseFloat(charSequence.toString()));
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextMoveDistanceLongitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_MOVE_MULTIPLIER_LONG)));
+				}
 			}
 		});
 
@@ -108,12 +168,26 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
-						Float.parseFloat(charSequence.toString()));
+				if (!Utils.isFloat(charSequence)) {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LAT);
+				} else {
+					Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
+							Float.parseFloat(charSequence.toString()));
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextRespawnLocationLatitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_RESPAWN_LAT)));
+				}
 			}
 		});
 
@@ -129,12 +203,26 @@ public class MainActivity extends AppCompatActivity {
 
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
-						Float.parseFloat(charSequence.toString()));
+				if (!Utils.isFloat(charSequence)) {
+					Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LONG);
+				} else {
+					Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
+							Float.parseFloat(charSequence.toString()));
+				}
 			}
 
 			@Override
 			public void afterTextChanged(Editable editable) {
+			}
+		});
+		editTextRespawnLocationLongitude.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_RESPAWN_LONG)));
+				}
 			}
 		});
 	}
