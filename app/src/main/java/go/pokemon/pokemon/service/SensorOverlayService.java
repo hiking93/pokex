@@ -1,6 +1,7 @@
 package go.pokemon.pokemon.service;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.SensorEvent;
@@ -31,6 +32,11 @@ public class SensorOverlayService extends Service {
 
 	private WindowManager mWindowManager;
 	private View mRootView;
+
+	public static ComponentName getComponentName() {
+		return new ComponentName("go.pokemon.pokemon",
+				"go.pokemon.pokemon.service.SensorOverlayService");
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {

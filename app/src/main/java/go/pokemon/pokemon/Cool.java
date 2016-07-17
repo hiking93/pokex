@@ -1,6 +1,5 @@
 package go.pokemon.pokemon;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -99,7 +98,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 								SensorManager.SENSOR_DELAY_NORMAL);
 
 						Intent intent = new Intent();
-						intent.setComponent(getSensorOverlayServiceComponent());
+						intent.setComponent(SensorOverlayService.getComponentName());
 						mContext.startService(intent);
 					}
 				});
@@ -115,7 +114,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						mSensorManager.unregisterListener(Cool.this, mSensor);
 						Intent intent = new Intent();
-						intent.setComponent(getSensorOverlayServiceComponent());
+						intent.setComponent(SensorOverlayService.getComponentName());
 						mContext.stopService(intent);
 					}
 				});
@@ -165,7 +164,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 				Intent intent = new Intent();
 				intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
-				intent.setComponent(getSensorOverlayServiceComponent());
+				intent.setComponent(SensorOverlayService.getComponentName());
 				mContext.startService(intent);
 
 				if (isPositionChanged) {
@@ -173,10 +172,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				}
 			}
 		}
-	}
-
-	private ComponentName getSensorOverlayServiceComponent() {
-		return new ComponentName("go.pokemon.pokemon", ".service.SensorOverlayService");
 	}
 
 	@Override
