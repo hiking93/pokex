@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -30,9 +31,9 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 	private Object mThisObject;
 	private Location mLocation;
 
-	private double mPlayerLatitude, mPlayerLongitude;
-	private double mSensorThreshold;
-	private double mMoveDistanceLatitude, mMoveDistanceLongitude;
+	private float mPlayerLatitude, mPlayerLongitude;
+	private float mSensorThreshold;
+	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
 	private long mLastUpdate;
 	private int mMinimumTimeInterval;
 	private int[] mWhateverArray;
@@ -49,9 +50,11 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					@Override
 					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 						super.afterHookedMethod(param);
-						Log.d(Constant.TAG, "Constructor hooked");
 
+						Log.d(Constant.TAG, "Constructor hooked");
 						mContext = (Context) param.args[0];
+						Toast.makeText(mContext, "Sensor module loaded.", Toast.LENGTH_SHORT)
+								.show();
 
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mMinimumTimeInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
@@ -61,12 +64,18 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LONG);
 						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
 						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
-						Log.d(Constant.TAG, "mSensorThreshold = " + mSensorThreshold +
-								"\nmMinimumTimeInterval = " + mMinimumTimeInterval +
-								"\nmMoveDistanceLatitude = " + mMoveDistanceLatitude +
-								"\nmMoveDistanceLongitude = " + mMoveDistanceLongitude +
-								"\nmPlayerLatitude = " + mPlayerLatitude +
-								"\nmPlayerLongitude = " + mPlayerLongitude);
+						Log.d(Constant.TAG,
+								"mSensorThreshold = " + Utils.toDecimalString(mSensorThreshold) +
+										"\nmMinimumTimeInterval = " +
+										Utils.toDecimalString(mMinimumTimeInterval) +
+										"\nmMoveDistanceLatitude = " +
+										Utils.toDecimalString(mMoveDistanceLatitude) +
+										"\nmMoveDistanceLongitude = " +
+										Utils.toDecimalString(mMoveDistanceLongitude) +
+										"\nmPlayerLatitude = " +
+										Utils.toDecimalString(mPlayerLatitude) +
+										"\nmPlayerLongitude = " +
+										Utils.toDecimalString(mPlayerLongitude));
 
 						mSensorManager =
 								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -132,7 +141,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					isPositionChanged = true;
 				}
 
-				float calibratedY = sensorY - 8; // For hand-held comfort
+				float calibratedY = sensorY - 3; // For hand-held comfort
 				if (calibratedY > mSensorThreshold || calibratedY < -mSensorThreshold) {
 					mPlayerLatitude -= mMoveDistanceLatitude *
 							(calibratedY > 0 ? calibratedY - mSensorThreshold :
