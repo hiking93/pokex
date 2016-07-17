@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
               android:background="@drawable/overlay_debug_background"
               android:orientation="vertical"
               android:padding="@dimen/margin_small">
@@ -24,4 +24,9 @@
 		android:textColor="@color/white_text_secondary"
 		tools:text="Sensor Y: 4.0"/>
 
+	<go.pokemon.pokemon.module.SensorView
+		android:id="@+id/sensorView"
+		android:layout_width="120dp"
+		android:layout_height="120dp"
+		android:layout_marginTop="@dimen/margin_small"/>
 </LinearLayout>

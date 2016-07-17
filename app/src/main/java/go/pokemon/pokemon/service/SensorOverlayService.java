@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import go.pokemon.pokemon.R;
 import go.pokemon.pokemon.lib.Prefs;
+import go.pokemon.pokemon.module.SensorView;
 
 /**
  * Service to create overlay
@@ -29,6 +30,7 @@ public class SensorOverlayService extends Service {
 
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
+	@BindView(R.id.sensorView) SensorView mSensorView;
 
 	private WindowManager mWindowManager;
 	private View mRootView;
@@ -79,6 +81,8 @@ public class SensorOverlayService extends Service {
 		boolean sensorYOverThreshold = sensorY >= sensorThreshold || sensorY <= -sensorThreshold;
 		mSensorYTextView.setTextColor(ContextCompat.getColor(this,
 				sensorYOverThreshold ? R.color.yellow_500 : R.color.white_text_secondary));
+
+		mSensorView.setSensorValues((float) sensorX, (float) sensorY);
 	}
 
 	public static Bundle createSensorEventBundle(SensorEvent sensorEvent) {
@@ -86,7 +90,7 @@ public class SensorOverlayService extends Service {
 		float sensorY = sensorEvent.values[1];
 
 		Bundle bundle = new Bundle();
-		bundle.putDouble("sensorX", sensorX);
+		bundle.putDouble("sensorX", -sensorX);
 		bundle.putDouble("sensorY", sensorY - 5);
 		return bundle;
 	}
@@ -133,6 +137,8 @@ public class SensorOverlayService extends Service {
 				return false;
 			}
 		});
+
+		mSensorView.setThreshold(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD));
 	}
 
 	@Override
