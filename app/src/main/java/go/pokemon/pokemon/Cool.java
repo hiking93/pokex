@@ -38,7 +38,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 	private float mPlayerLatitude, mPlayerLongitude;
 	private float mSensorThreshold;
 	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
-	private long mLastUpdate;
+	private long mLastSensorUpdate;
 	private int mMinimumTimeInterval;
 	private int[] mWhateverArray;
 
@@ -144,8 +144,8 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 			float sensorY = sensorEvent.values[1];
 
 			long currentTime = System.currentTimeMillis();
-			if ((currentTime - mLastUpdate) > mMinimumTimeInterval) {
-				mLastUpdate = currentTime;
+			if ((currentTime - mLastSensorUpdate) > mMinimumTimeInterval) {
+				mLastSensorUpdate = currentTime;
 				boolean isPositionChanged = false;
 
 				float calibratedX = -sensorX; // TODO: Add pref
@@ -187,5 +187,10 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 		mLocation.setLongitude(longitude);
 		XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray,
 				mContext);
+
+		Intent intent = new Intent();
+		intent.putExtras(SensorOverlayService.createLocationUpdateBundle(latitude, longitude));
+		intent.setComponent(SensorOverlayService.getComponentName());
+		mContext.startService(intent);
 	}
 }

@@ -30,10 +30,14 @@ public class SensorOverlayService extends Service {
 
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
+	@BindView(R.id.textView_latitude) TextView mLatitudeTextView;
+	@BindView(R.id.textView_longitude) TextView mLongitudeTextView;
 	@BindView(R.id.sensorView) SensorView mSensorView;
 
 	private WindowManager mWindowManager;
 	private View mRootView;
+
+	private DecimalFormat mSensorFormat, mLocationFormat;
 
 	public static ComponentName getComponentName() {
 		return new ComponentName("go.pokemon.pokemon",
@@ -49,11 +53,22 @@ public class SensorOverlayService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-		mRootView = View.inflate(this, R.layout.overlay_debug, null);
-		ButterKnife.setDebug(true);
-		ButterKnife.bind(this, mRootView);
+		initValues();
+		inflateViews();
 		setUpViews();
+	}
+
+	private void initValues() {
+		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+		mSensorFormat = new DecimalFormat("0.00");
+		mSensorFormat.setPositivePrefix("+");
+		mLocationFormat = new DecimalFormat("0.00000");
+		mLocationFormat.setPositivePrefix("+");
+	}
+
+	private void inflateViews() {
+		mRootView = View.inflate(this, R.layout.overlay_debug, null);
+		ButterKnife.bind(this, mRootView);
 	}
 
 	@Override
@@ -65,15 +80,30 @@ public class SensorOverlayService extends Service {
 	}
 
 	private void onDataReceived(Bundle bundle) {
+		if (bundle.containsKey("sensorX")) {
+			onSensorEvent(bundle);
+		} else if (bundle.containsKey("latitude")) {
+			onLocationUpdate(bundle);
+		}
+	}
+
+	public static Bundle createSensorEventBundle(SensorEvent sensorEvent) {
+		float sensorX = sensorEvent.values[0];
+		float sensorY = sensorEvent.values[1];
+
+		Bundle bundle = new Bundle();
+		bundle.putDouble("sensorX", sensorX);
+		bundle.putDouble("sensorY", sensorY - 5);
+		return bundle;
+	}
+
+	private void onSensorEvent(Bundle bundle) {
 		double sensorX = bundle.getDouble("sensorX");
 		double sensorY = bundle.getDouble("sensorY");
 		float sensorThreshold = Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD);
 
-		DecimalFormat sensorFormat = new DecimalFormat("0.00");
-		sensorFormat.setPositivePrefix("+");
-
-		mSensorXTextView.setText("Sensor X: " + sensorFormat.format(sensorX));
-		mSensorYTextView.setText("Sensor Y: " + sensorFormat.format(sensorY));
+		mSensorXTextView.setText("Sensor X: " + mSensorFormat.format(sensorX));
+		mSensorYTextView.setText("Sensor Y: " + mSensorFormat.format(sensorY));
 
 		boolean sensorOverThreshold =
 				sensorX * sensorX + sensorY * sensorY >= sensorThreshold * sensorThreshold;
@@ -85,14 +115,19 @@ public class SensorOverlayService extends Service {
 		mSensorView.setSensorValues((float) sensorX, (float) sensorY);
 	}
 
-	public static Bundle createSensorEventBundle(SensorEvent sensorEvent) {
-		float sensorX = sensorEvent.values[0];
-		float sensorY = sensorEvent.values[1];
-
+	public static Bundle createLocationUpdateBundle(double latitude, double longitude) {
 		Bundle bundle = new Bundle();
-		bundle.putDouble("sensorX", sensorX);
-		bundle.putDouble("sensorY", sensorY - 5);
+		bundle.putDouble("latitude", latitude);
+		bundle.putDouble("longitude", longitude);
 		return bundle;
+	}
+
+	private void onLocationUpdate(Bundle bundle) {
+		double latitude = bundle.getDouble("latitude");
+		double longitude = bundle.getDouble("longitude");
+
+		mLatitudeTextView.setText(mLocationFormat.format(latitude));
+		mLongitudeTextView.setText(mLocationFormat.format(longitude));
 	}
 
 	private void setUpViews() {
