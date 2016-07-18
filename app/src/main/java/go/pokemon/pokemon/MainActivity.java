@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		setContentView(R.layout.activity_main);
 
 		initValues();
-		ButterKnife.setDebug(true);
 		ButterKnife.bind(this);
 		setUpViews();
 	}

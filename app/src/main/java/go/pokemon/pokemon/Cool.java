@@ -39,7 +39,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 	private float mSensorThreshold;
 	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
 	private long mLastSensorUpdate;
-	private int mMinimumTimeInterval;
+	private int mSensorUpdateInterval;
 	private int[] mWhateverArray;
 
 	@Override
@@ -74,7 +74,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						Log.d(Constant.TAG, "onResume");
 
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
-						mMinimumTimeInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
+						mSensorUpdateInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
 						mMoveDistanceLatitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
 						mMoveDistanceLongitude =
@@ -83,8 +83,8 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
 						Log.d(Constant.TAG,
 								"mSensorThreshold = " + Utils.toDecimalString(mSensorThreshold) +
-										"\nmMinimumTimeInterval = " +
-										Utils.toDecimalString(mMinimumTimeInterval) +
+										"\nmSensorUpdateInterval = " +
+										Utils.toDecimalString(mSensorUpdateInterval) +
 										"\nmMoveDistanceLatitude = " +
 										Utils.toDecimalString(mMoveDistanceLatitude) +
 										"\nmMoveDistanceLongitude = " +
@@ -144,7 +144,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 			float sensorY = sensorEvent.values[1];
 
 			long currentTime = System.currentTimeMillis();
-			if ((currentTime - mLastSensorUpdate) > mMinimumTimeInterval) {
+			if ((currentTime - mLastSensorUpdate) > mSensorUpdateInterval) {
 				mLastSensorUpdate = currentTime;
 				boolean isPositionChanged = false;
 
@@ -153,10 +153,11 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 				if (calibratedX * calibratedX + calibratedY * calibratedY >=
 						mSensorThreshold * mSensorThreshold) {
-					mPlayerLongitude += mMoveDistanceLongitude *
+					float sensorUpdateIntervalSecond = mSensorUpdateInterval / 1000f;
+					mPlayerLongitude += mMoveDistanceLongitude * sensorUpdateIntervalSecond *
 							(calibratedX > 0 ? calibratedX - mSensorThreshold :
 									calibratedX + mSensorThreshold);
-					mPlayerLatitude += mMoveDistanceLatitude *
+					mPlayerLatitude += mMoveDistanceLatitude * sensorUpdateIntervalSecond *
 							(calibratedY > 0 ? calibratedY - mSensorThreshold :
 									calibratedY + mSensorThreshold);
 					isPositionChanged = true;
