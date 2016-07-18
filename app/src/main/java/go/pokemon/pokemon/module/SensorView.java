@@ -19,6 +19,8 @@ public class SensorView extends View {
 	private float mMaxValue = 10f;
 	private float mXValue, mYValue;
 	private float mDrawXValue, mDrawYValue;
+	private long mLastSensorUpdateTime;
+	private int mSmoothingDuration = 100;
 
 	private Paint mPaint;
 
@@ -65,8 +67,17 @@ public class SensorView extends View {
 		mYValue = y;
 		invalidate();
 
+		// Calculate smoothing animation duration
+		long now = System.currentTimeMillis();
+		if (mLastSensorUpdateTime > 0) {
+			int timePassed = (int) (now - mLastSensorUpdateTime);
+			mSmoothingDuration = (int) (mSmoothingDuration * .9 + timePassed * .1);
+		}
+		mLastSensorUpdateTime = now;
+
 		// Smoothing for drawing
-		ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(100);
+		int animationTime = Math.max(mSmoothingDuration, 100);// Should be >= 100 to look smooth
+		ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(animationTime);
 		xAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
 			@Override
@@ -75,7 +86,7 @@ public class SensorView extends View {
 				invalidate();
 			}
 		});
-		ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(100);
+		ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(animationTime);
 		yAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
 			@Override
