@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import go.pokemon.pokemon.lib.Constant;
 import go.pokemon.pokemon.lib.Utils;
 
 /**
@@ -65,7 +66,6 @@ public class SensorView extends View {
 	public void setSensorValues(float x, float y) {
 		mXValue = x;
 		mYValue = y;
-		invalidate();
 
 		// Calculate smoothing animation duration
 		long now = System.currentTimeMillis();
@@ -75,28 +75,34 @@ public class SensorView extends View {
 		}
 		mLastSensorUpdateTime = now;
 
-		// Smoothing for drawing
-		int animationTime = Math.max(mSmoothingDuration, 100);// Should be >= 100 to look smooth
-		ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(animationTime);
-		xAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+		if (Constant.ENABLE_SMOOTHING) {
+			// Smoothing for drawing
+			int animationTime = Math.max(mSmoothingDuration, 100);// Should be >= 100 to look smooth
+			ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(animationTime);
+			xAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-			@Override
-			public void onAnimationUpdate(ValueAnimator valueAnimator) {
-				mDrawXValue = (Float) valueAnimator.getAnimatedValue();
-				invalidate();
-			}
-		});
-		ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(animationTime);
-		yAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+				@Override
+				public void onAnimationUpdate(ValueAnimator valueAnimator) {
+					mDrawXValue = (Float) valueAnimator.getAnimatedValue();
+					invalidate();
+				}
+			});
+			ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(animationTime);
+			yAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-			@Override
-			public void onAnimationUpdate(ValueAnimator valueAnimator) {
-				mDrawYValue = (Float) valueAnimator.getAnimatedValue();
-				invalidate();
-			}
-		});
-		xAnim.start();
-		yAnim.start();
+				@Override
+				public void onAnimationUpdate(ValueAnimator valueAnimator) {
+					mDrawYValue = (Float) valueAnimator.getAnimatedValue();
+					invalidate();
+				}
+			});
+			xAnim.start();
+			yAnim.start();
+		} else {
+			mDrawXValue = x;
+			mDrawYValue = y;
+		}
+		invalidate();
 	}
 
 	@Override
