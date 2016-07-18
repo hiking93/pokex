@@ -73,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 					Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
 							Float.parseFloat(charSequence.toString()));
 				}
+				Intent intent = new Intent(MainActivity.this, SensorOverlayService.class);
+				intent.putExtras(SensorOverlayService.createThresholdUpdateBundle(
+						Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD)));
+				startService(intent);
 			}
 
 			@Override

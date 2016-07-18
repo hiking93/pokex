@@ -26,7 +26,7 @@ public class Prefs {
 	private static SharedPreferences mSharedPreferences;
 	private static XSharedPreferences mXSharedPreferences;
 
-	private static void init(Context context, boolean x) {
+	private static void refresh(Context context, boolean x) {
 		if (x) {
 			mXSharedPreferences = new XSharedPreferences("go.pokemon.pokemon", "pokemon");
 		} else {
@@ -37,29 +37,37 @@ public class Prefs {
 		mDefaultValueMap = new HashMap<>();
 		mDefaultValueMap.put(KEY_SENSOR_THRESHOLD, 2f);
 		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 100);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .0001f);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .0001f);
+		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00015f);
+		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00015f);
 		mDefaultValueMap.put(KEY_RESPAWN_LAT, 40.7589f);
 		mDefaultValueMap.put(KEY_RESPAWN_LONG, -73.9851f);
 	}
 
+	public static void refresh(Context context) {
+		refresh(context, false);
+	}
+
+	public static void refreshX(Context context) {
+		refresh(context, true);
+	}
+
 	public static SharedPreferences getPrefs(Context context) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		return mSharedPreferences;
 	}
 
 	public static SharedPreferences.Editor getPrefEditor(Context context) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		return mSharedPreferences.edit();
 	}
 
 	public static void setToDefault(Context context, String key) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		mSharedPreferences.edit().remove(key).apply();
 	}
@@ -80,21 +88,21 @@ public class Prefs {
 
 	public static int getInt(Context context, String key) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		return getIntValue(mSharedPreferences.getInt(key, getIntValue(mDefaultValueMap.get(key))));
 	}
 
 	public static int getXInt(Context context, String key) {
 		if (mXSharedPreferences == null) {
-			init(context, true);
+			refresh(context, true);
 		}
 		return getIntValue(mXSharedPreferences.getInt(key, getIntValue(mDefaultValueMap.get(key))));
 	}
 
 	public static void setInt(Context context, String key, int value) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		mSharedPreferences.edit().putInt(key, value).apply();
 	}
@@ -115,7 +123,7 @@ public class Prefs {
 
 	public static float getFloat(Context context, String key) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		return getFloatValue(
 				mSharedPreferences.getFloat(key, getFloatValue(mDefaultValueMap.get(key))));
@@ -123,7 +131,7 @@ public class Prefs {
 
 	public static float getXFloat(Context context, String key) {
 		if (mXSharedPreferences == null) {
-			init(context, true);
+			refresh(context, true);
 		}
 		return getFloatValue(
 				mXSharedPreferences.getFloat(key, getFloatValue(mDefaultValueMap.get(key))));
@@ -131,28 +139,28 @@ public class Prefs {
 
 	public static void setFloat(Context context, String key, float value) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		mSharedPreferences.edit().putFloat(key, value).apply();
 	}
 
 	public static String getString(Context context, String key) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		return mSharedPreferences.getString(key, (String) mDefaultValueMap.get(key));
 	}
 
 	public static String getXString(Context context, String key) {
 		if (mXSharedPreferences == null) {
-			init(context, true);
+			refresh(context, true);
 		}
 		return mXSharedPreferences.getString(key, (String) mDefaultValueMap.get(key));
 	}
 
 	public static void setString(Context context, String key, String value) {
 		if (mSharedPreferences == null) {
-			init(context, false);
+			refresh(context, false);
 		}
 		mSharedPreferences.edit().putString(key, value).apply();
 	}

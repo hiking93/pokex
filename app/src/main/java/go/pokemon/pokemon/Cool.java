@@ -58,6 +58,10 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						Log.d(Constant.TAG, "Constructor hooked");
 						mContext = (Context) param.args[0];
 
+						// Initial player position
+						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
+						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
+
 						mSensorManager =
 								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
 						mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -73,14 +77,14 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onResume");
 
+						// Update params
+						Prefs.refreshX(mContext);
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mSensorUpdateInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
 						mMoveDistanceLatitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
 						mMoveDistanceLongitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LONG);
-						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
-						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
 						Log.d(Constant.TAG,
 								"mSensorThreshold = " + Utils.toDecimalString(mSensorThreshold) +
 										"\nmSensorUpdateInterval = " +

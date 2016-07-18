@@ -84,6 +84,8 @@ public class SensorOverlayService extends Service {
 			onSensorEvent(bundle);
 		} else if (bundle.containsKey("latitude")) {
 			onLocationUpdate(bundle);
+		} else if (bundle.containsKey("threshold")) {
+			onThresholdUpdate(bundle);
 		}
 	}
 
@@ -130,6 +132,18 @@ public class SensorOverlayService extends Service {
 		mLatitudeTextView.setVisibility(View.VISIBLE);
 		mLongitudeTextView.setText("LNG:" + mLocationFormat.format(longitude));
 		mLongitudeTextView.setVisibility(View.VISIBLE);
+	}
+
+	public static Bundle createThresholdUpdateBundle(float threshold) {
+		Bundle bundle = new Bundle();
+		bundle.putDouble("threshold", threshold);
+		return bundle;
+	}
+
+	private void onThresholdUpdate(Bundle bundle) {
+		float threshold = (float) bundle.getDouble("threshold");
+		
+		mSensorView.setThreshold(threshold);
 	}
 
 	private void setUpViews() {
