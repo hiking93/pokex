@@ -58,6 +58,21 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						Log.d(Constant.TAG, "Constructor hooked");
 						mContext = (Context) param.args[0];
 
+						mSensorManager =
+								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+						mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+					}
+				});
+
+		findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager",
+				lpparam.classLoader, "onResume", new XC_MethodHook() {
+
+					@Override
+					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+						super.beforeHookedMethod(param);
+
+						Log.d(Constant.TAG, "onResume");
+
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mMinimumTimeInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
 						mMoveDistanceLatitude =
@@ -78,21 +93,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										Utils.toDecimalString(mPlayerLatitude) +
 										"\nmPlayerLongitude = " +
 										Utils.toDecimalString(mPlayerLongitude));
-
-						mSensorManager =
-								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-						mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-					}
-				});
-
-		findAndHookMethod("com.nianticlabs.nia.location.NianticLocationManager",
-				lpparam.classLoader, "onResume", new XC_MethodHook() {
-
-					@Override
-					protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-						super.beforeHookedMethod(param);
-
-						Log.d(Constant.TAG, "onResume");
 
 						mSensorManager.registerListener(Cool.this, mSensor,
 								SensorManager.SENSOR_DELAY_NORMAL);

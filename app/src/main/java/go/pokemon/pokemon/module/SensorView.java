@@ -77,8 +77,8 @@ public class SensorView extends View {
 
 		if (Constant.ENABLE_SMOOTHING) {
 			// Smoothing for drawing
-			int animationTime = Math.max(mSmoothingDuration, 100);// Should be >= 100 to look smooth
-			ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(animationTime);
+			ValueAnimator xAnim =
+					ValueAnimator.ofFloat(mDrawXValue, x).setDuration(mSmoothingDuration);
 			xAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
 				@Override
@@ -87,7 +87,8 @@ public class SensorView extends View {
 					invalidate();
 				}
 			});
-			ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(animationTime);
+			ValueAnimator yAnim =
+					ValueAnimator.ofFloat(mDrawYValue, y).setDuration(mSmoothingDuration);
 			yAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
 				@Override

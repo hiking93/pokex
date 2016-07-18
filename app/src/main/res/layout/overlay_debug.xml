@@ -37,6 +37,7 @@
 		android:layout_marginTop="@dimen/margin_xsmall"
 		android:fontFamily="monospace"
 		android:textColor="@color/white_text_secondary"
+		android:visibility="gone"
 		tools:text="latitude"/>
 
 	<TextView
@@ -46,5 +47,6 @@
 		android:layout_marginTop="@dimen/margin_xsmall"
 		android:fontFamily="monospace"
 		android:textColor="@color/white_text_secondary"
+		android:visibility="gone"
 		tools:text="longitude"/>
 </LinearLayout>

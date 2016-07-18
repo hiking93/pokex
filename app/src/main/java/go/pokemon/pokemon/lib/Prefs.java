@@ -36,9 +36,9 @@ public class Prefs {
 
 		mDefaultValueMap = new HashMap<>();
 		mDefaultValueMap.put(KEY_SENSOR_THRESHOLD, 2f);
-		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 200);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00001f);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00001f);
+		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 100);
+		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00003f);
+		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00003f);
 		mDefaultValueMap.put(KEY_RESPAWN_LAT, 40.7589f);
 		mDefaultValueMap.put(KEY_RESPAWN_LONG, -73.9851f);
 	}

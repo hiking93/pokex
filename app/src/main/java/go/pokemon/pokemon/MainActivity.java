@@ -36,18 +36,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
+	private long mLastSensorUpdate;
+	private int mMinimumTimeInterval;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
+		initValues();
 		ButterKnife.setDebug(true);
 		ButterKnife.bind(this);
 		setUpViews();
+	}
+
+	private void initValues() {
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		mMinimumTimeInterval = Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL);
 	}
 
 	private void setUpViews() {
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 				} else {
 					Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
 				}
+				mMinimumTimeInterval = Prefs.getInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
 			}
 
 			@Override
@@ -298,9 +306,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
-		Intent intent = new Intent(this, SensorOverlayService.class);
-		intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
-		startService(intent);
+		long currentTime = System.currentTimeMillis();
+		if ((currentTime - mLastSensorUpdate) > mMinimumTimeInterval) {
+			mLastSensorUpdate = currentTime;
+			Intent intent = new Intent(this, SensorOverlayService.class);
+			intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
+			startService(intent);
+		}
 	}
 
 	@Override

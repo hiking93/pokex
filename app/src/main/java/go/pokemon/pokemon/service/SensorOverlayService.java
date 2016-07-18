@@ -92,8 +92,8 @@ public class SensorOverlayService extends Service {
 		float sensorY = sensorEvent.values[1];
 
 		Bundle bundle = new Bundle();
-		bundle.putDouble("sensorX", sensorX);
-		bundle.putDouble("sensorY", sensorY - 5);
+		bundle.putDouble("sensorX", sensorX); // TODO Add pref
+		bundle.putDouble("sensorY", sensorY - 5); // For hand-held comfort TODO: Add pref
 		return bundle;
 	}
 
@@ -126,8 +126,10 @@ public class SensorOverlayService extends Service {
 		double latitude = bundle.getDouble("latitude");
 		double longitude = bundle.getDouble("longitude");
 
-		mLatitudeTextView.setText(mLocationFormat.format(latitude));
-		mLongitudeTextView.setText(mLocationFormat.format(longitude));
+		mLatitudeTextView.setText("LAT:" + mLocationFormat.format(latitude));
+		mLatitudeTextView.setVisibility(View.VISIBLE);
+		mLongitudeTextView.setText("LNG:" + mLocationFormat.format(longitude));
+		mLongitudeTextView.setVisibility(View.VISIBLE);
 	}
 
 	private void setUpViews() {
