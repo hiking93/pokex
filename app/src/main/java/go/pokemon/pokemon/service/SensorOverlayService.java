@@ -65,22 +65,22 @@ public class SensorOverlayService extends Service {
 	}
 
 	private void onDataReceived(Bundle bundle) {
+		double sensorX = bundle.getDouble("sensorX");
+		double sensorY = bundle.getDouble("sensorY");
 		float sensorThreshold = Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD);
 
 		DecimalFormat sensorFormat = new DecimalFormat("0.00");
 		sensorFormat.setPositivePrefix("+");
 
-		double sensorX = bundle.getDouble("sensorX");
 		mSensorXTextView.setText("Sensor X: " + sensorFormat.format(sensorX));
-		boolean sensorXOverThreshold = sensorX >= sensorThreshold || sensorX <= -sensorThreshold;
-		mSensorXTextView.setTextColor(ContextCompat.getColor(this,
-				sensorXOverThreshold ? R.color.yellow_500 : R.color.white_text_secondary));
-
-		double sensorY = bundle.getDouble("sensorY");
 		mSensorYTextView.setText("Sensor Y: " + sensorFormat.format(sensorY));
-		boolean sensorYOverThreshold = sensorY >= sensorThreshold || sensorY <= -sensorThreshold;
-		mSensorYTextView.setTextColor(ContextCompat.getColor(this,
-				sensorYOverThreshold ? R.color.yellow_500 : R.color.white_text_secondary));
+
+		boolean sensorOverThreshold =
+				sensorX * sensorX + sensorY * sensorY >= sensorThreshold * sensorThreshold;
+		int sensorTextColor = ContextCompat.getColor(this,
+				sensorOverThreshold ? R.color.yellow_500 : R.color.white_text_secondary);
+		mSensorXTextView.setTextColor(sensorTextColor);
+		mSensorYTextView.setTextColor(sensorTextColor);
 
 		mSensorView.setSensorValues((float) sensorX, (float) sensorY);
 	}
@@ -90,7 +90,7 @@ public class SensorOverlayService extends Service {
 		float sensorY = sensorEvent.values[1];
 
 		Bundle bundle = new Bundle();
-		bundle.putDouble("sensorX", -sensorX);
+		bundle.putDouble("sensorX", sensorX);
 		bundle.putDouble("sensorY", sensorY - 5);
 		return bundle;
 	}

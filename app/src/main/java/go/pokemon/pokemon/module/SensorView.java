@@ -1,5 +1,6 @@
 package go.pokemon.pokemon.module;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,6 +18,7 @@ public class SensorView extends View {
 	private float mThreshold;
 	private float mMaxValue = 10f;
 	private float mXValue, mYValue;
+	private float mDrawXValue, mDrawYValue;
 
 	private Paint mPaint;
 
@@ -62,6 +64,28 @@ public class SensorView extends View {
 		mXValue = x;
 		mYValue = y;
 		invalidate();
+
+		// Smoothing for drawing
+		ValueAnimator xAnim = ValueAnimator.ofFloat(mDrawXValue, x).setDuration(100);
+		xAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+			@Override
+			public void onAnimationUpdate(ValueAnimator valueAnimator) {
+				mDrawXValue = (Float) valueAnimator.getAnimatedValue();
+				invalidate();
+			}
+		});
+		ValueAnimator yAnim = ValueAnimator.ofFloat(mDrawYValue, y).setDuration(100);
+		yAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+			@Override
+			public void onAnimationUpdate(ValueAnimator valueAnimator) {
+				mDrawYValue = (Float) valueAnimator.getAnimatedValue();
+				invalidate();
+			}
+		});
+		xAnim.start();
+		yAnim.start();
 	}
 
 	@Override
@@ -71,8 +95,18 @@ public class SensorView extends View {
 		int width = canvas.getWidth();
 		int height = canvas.getWidth();
 
+		// Calibrated sensor values, x positive on the right
+		float rawX = -mXValue;
+		float rawY = mYValue;
+		float smoothX = -mDrawXValue;
+		float smoothY = mDrawYValue;
+		boolean overThreshold = rawX * rawX + rawY * rawY >= mThreshold * mThreshold;
+
 		// Outer (max)
 		float outerRadius = width * .45f;
+		mPaint.setColor(overThreshold ? 0x33ffeb3b : 0x33ffffff);
+		mPaint.setStyle(Paint.Style.FILL);
+		canvas.drawCircle(width / 2, height / 2, outerRadius, mPaint);
 		mPaint.setColor(0xb3ffffff);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(Utils.convertDpToPixel(getContext(), 2));
@@ -80,15 +114,21 @@ public class SensorView extends View {
 
 		// Threshold
 		float thresholdRadius = outerRadius * mThreshold / mMaxValue;
+		mPaint.setColor(0x33000000);
+		mPaint.setStyle(Paint.Style.FILL);
+		canvas.drawCircle(width / 2, height / 2, thresholdRadius, mPaint);
 		mPaint.setColor(0xffffeb3b);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(Utils.convertDpToPixel(getContext(), 2));
 		canvas.drawCircle(width / 2, height / 2, thresholdRadius, mPaint);
 
 		// Sensor indicator
-		float sensorIndicatorX = width / 2 + outerRadius * mXValue / mMaxValue;
-		float sensorIndicatorY = height / 2 + outerRadius * mYValue / mMaxValue;
+		float sensorIndicatorX = width / 2 + outerRadius * smoothX / mMaxValue;
+		float sensorIndicatorY = height / 2 + outerRadius * smoothY / mMaxValue;
 		float sensorIndicatorRadius = width * .05f;
+		mPaint.setColor(0x66ffffff);
+		mPaint.setStyle(Paint.Style.FILL);
+		canvas.drawCircle(sensorIndicatorX, sensorIndicatorY, sensorIndicatorRadius, mPaint);
 		mPaint.setColor(0xffffffff);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(Utils.convertDpToPixel(getContext(), 2));

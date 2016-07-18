@@ -148,17 +148,15 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				mLastUpdate = currentTime;
 				boolean isPositionChanged = false;
 
-				float calibratedX = -sensorX;
-				if (calibratedX > mSensorThreshold || calibratedX < -mSensorThreshold) {
-					mPlayerLongitude -= mMoveDistanceLongitude *
+				float calibratedX = -sensorX; // TODO: Add pref
+				float calibratedY = -sensorY + 5; // For hand-held comfort TODO: Add pref
+
+				if (calibratedX * calibratedX + calibratedY * calibratedY >=
+						mSensorThreshold * mSensorThreshold) {
+					mPlayerLongitude += mMoveDistanceLongitude *
 							(calibratedX > 0 ? calibratedX - mSensorThreshold :
 									calibratedX + mSensorThreshold);
-					isPositionChanged = true;
-				}
-
-				float calibratedY = sensorY - 5; // For hand-held comfort
-				if (calibratedY > mSensorThreshold || calibratedY < -mSensorThreshold) {
-					mPlayerLatitude -= mMoveDistanceLatitude *
+					mPlayerLatitude += mMoveDistanceLatitude *
 							(calibratedY > 0 ? calibratedY - mSensorThreshold :
 									calibratedY + mSensorThreshold);
 					isPositionChanged = true;
