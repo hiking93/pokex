@@ -39,8 +39,8 @@ public class Prefs {
 		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 100);
 		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00015f);
 		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00015f);
-		mDefaultValueMap.put(KEY_RESPAWN_LAT, 40.7589f);
-		mDefaultValueMap.put(KEY_RESPAWN_LONG, -73.9851f);
+		mDefaultValueMap.put(KEY_RESPAWN_LAT, 25.044194f);
+		mDefaultValueMap.put(KEY_RESPAWN_LONG, 121.553897f);
 	}
 
 	public static void refresh(Context context) {
