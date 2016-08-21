@@ -38,5 +38,5 @@ dependencies {
     provided 'de.robv.android.xposed:api:82:sources'
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
-    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'xiaofei.library:hermes-eventbus:0.1.1'
 }

@@ -31,6 +31,11 @@
 		<service
 			android:name=".service.SensorOverlayService"
 			android:exported="true"/>
+
+		<service
+			android:name="xiaofei.library.hermes.HermesService$HermesService0"
+			android:exported="true"/>
+
 	</application>
 
 </manifest>

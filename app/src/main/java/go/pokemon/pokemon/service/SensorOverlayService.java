@@ -19,8 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.text.DecimalFormat;
 
 import butterknife.BindView;
@@ -28,6 +26,7 @@ import butterknife.ButterKnife;
 import go.pokemon.pokemon.R;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.module.SensorView;
+import xiaofei.library.hermeseventbus.HermesEventBus;
 
 /**
  * Service to create overlay
@@ -246,7 +245,7 @@ public class SensorOverlayService extends Service {
 
 					@Override
 					public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-						EventBus.getDefault().post(new SensorSwitchToggleEvent(checked));
+						HermesEventBus.getDefault().post(new SensorSwitchToggleEvent(checked));
 					}
 				});
 	}

@@ -23,14 +23,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.lib.Utils;
 import go.pokemon.pokemon.service.SensorOverlayService;
+import xiaofei.library.hermeseventbus.HermesEventBus;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	}
 
 	private void initValues() {
+		HermesEventBus.getDefault().init(this);
+
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -298,10 +301,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		super.onResume();
 
 		checkToEnableOverlay();
-		EventBus.getDefault().register(this);
+		HermesEventBus.getDefault().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
 		Log.d("poked", "event = " + event);
 		mIsSensorEnabled = event.enabled;
@@ -318,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	@Override
 	protected void onPause() {
-		EventBus.getDefault().unregister(this);
+		HermesEventBus.getDefault().unregister(this);
 		stopSensorListening();
 
 		super.onPause();

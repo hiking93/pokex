@@ -14,8 +14,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -26,6 +26,7 @@ import go.pokemon.pokemon.lib.Constant;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.lib.Utils;
 import go.pokemon.pokemon.service.SensorOverlayService;
+import xiaofei.library.hermeseventbus.HermesEventBus;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -110,7 +111,9 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										"\nmPlayerLongitude = " +
 										Utils.toDecimalString(mPlayerLongitude));
 
-						EventBus.getDefault().register(Cool.this);
+						HermesEventBus.getDefault().connectApp(mContext, "go.pokemon.pokemon");
+						HermesEventBus.getDefault().register(Cool.this);
+						Log.w("PokeEventBus", "registered!");
 						startSensorListening();
 					}
 				});
@@ -124,7 +127,8 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onPause");
 
-						EventBus.getDefault().unregister(Cool.this);
+						HermesEventBus.getDefault().unregister(Cool.this);
+						Log.e("PokeEventBus", "unregistered!");
 						stopSensorListening();
 					}
 				});
@@ -146,9 +150,9 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				});
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
-		Log.d("poked", "event = " + event);
+		Log.d("PokeEventBus", "event = " + event);
 		mIsSensorEnabled = event.enabled;
 	}
 
