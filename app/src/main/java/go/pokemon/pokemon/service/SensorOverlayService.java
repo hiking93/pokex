@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -28,6 +31,10 @@ import go.pokemon.pokemon.module.SensorView;
  */
 public class SensorOverlayService extends Service {
 
+	private static final int MESSAGE_SENSOR_EVENT = 1;
+	private static final int MESSAGE_LOCATION_UPDATE = 2;
+	private static final int MESSAGE_THRESHOLD_UPDATE = 3;
+
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
 	@BindView(R.id.textView_latitude) TextView mLatitudeTextView;
@@ -39,6 +46,30 @@ public class SensorOverlayService extends Service {
 
 	private DecimalFormat mSensorFormat, mLocationFormat;
 
+	private final Messenger mMessenger = new Messenger(new Handler() {
+
+		@Override
+		public void handleMessage(Message message) {
+			switch (message.what) {
+				case MESSAGE_SENSOR_EVENT: {
+					onSensorEvent(message);
+				}
+				break;
+				case MESSAGE_LOCATION_UPDATE: {
+					onLocationUpdate(message);
+				}
+				break;
+				case MESSAGE_THRESHOLD_UPDATE: {
+					onThresholdUpdate(message);
+				}
+				break;
+				default: {
+					super.handleMessage(message);
+				}
+			}
+		}
+	});
+
 	public static ComponentName getComponentName() {
 		return new ComponentName("go.pokemon.pokemon",
 				"go.pokemon.pokemon.service.SensorOverlayService");
@@ -46,7 +77,7 @@ public class SensorOverlayService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null; // Not used
+		return mMessenger.getBinder();
 	}
 
 	@Override
@@ -73,33 +104,27 @@ public class SensorOverlayService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent.getExtras() != null) {
-			onDataReceived(intent.getExtras());
-		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private void onDataReceived(Bundle bundle) {
-		if (bundle.containsKey("sensorX")) {
-			onSensorEvent(bundle);
-		} else if (bundle.containsKey("latitude")) {
-			onLocationUpdate(bundle);
-		} else if (bundle.containsKey("threshold")) {
-			onThresholdUpdate(bundle);
-		}
-	}
-
-	public static Bundle createSensorEventBundle(SensorEvent sensorEvent) {
+	public static Message createSensorEventMessage(SensorEvent sensorEvent) {
 		float sensorX = sensorEvent.values[0];
 		float sensorY = sensorEvent.values[1];
 
 		Bundle bundle = new Bundle();
 		bundle.putDouble("sensorX", sensorX); // TODO Add pref
 		bundle.putDouble("sensorY", sensorY - 5); // For hand-held comfort TODO: Add pref
-		return bundle;
+
+		Message message = Message.obtain();
+		message.what = MESSAGE_SENSOR_EVENT;
+		message.setData(bundle);
+
+		return message;
 	}
 
-	private void onSensorEvent(Bundle bundle) {
+	public void onSensorEvent(Message message) {
+		Bundle bundle = message.getData();
+
 		double sensorX = bundle.getDouble("sensorX");
 		double sensorY = bundle.getDouble("sensorY");
 		float sensorThreshold = Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD);
@@ -117,14 +142,20 @@ public class SensorOverlayService extends Service {
 		mSensorView.setSensorValues((float) sensorX, (float) sensorY);
 	}
 
-	public static Bundle createLocationUpdateBundle(double latitude, double longitude) {
+	public static Message createLocationUpdateMessage(double latitude, double longitude) {
 		Bundle bundle = new Bundle();
 		bundle.putDouble("latitude", latitude);
 		bundle.putDouble("longitude", longitude);
-		return bundle;
+
+		Message message = Message.obtain();
+		message.what = MESSAGE_LOCATION_UPDATE;
+		message.setData(bundle);
+		return message;
 	}
 
-	private void onLocationUpdate(Bundle bundle) {
+	public void onLocationUpdate(Message message) {
+		Bundle bundle = message.getData();
+
 		double latitude = bundle.getDouble("latitude");
 		double longitude = bundle.getDouble("longitude");
 
@@ -134,15 +165,21 @@ public class SensorOverlayService extends Service {
 		mLongitudeTextView.setVisibility(View.VISIBLE);
 	}
 
-	public static Bundle createThresholdUpdateBundle(float threshold) {
+	public static Message createThresholdUpdateMessage(float threshold) {
 		Bundle bundle = new Bundle();
 		bundle.putDouble("threshold", threshold);
-		return bundle;
+
+		Message message = Message.obtain();
+		message.what = MESSAGE_THRESHOLD_UPDATE;
+		message.setData(bundle);
+		return message;
 	}
 
-	private void onThresholdUpdate(Bundle bundle) {
+	public void onThresholdUpdate(Message message) {
+		Bundle bundle = message.getData();
+
 		float threshold = (float) bundle.getDouble("threshold");
-		
+
 		mSensorView.setThreshold(threshold);
 	}
 

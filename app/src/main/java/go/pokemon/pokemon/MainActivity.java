@@ -1,7 +1,9 @@
 package go.pokemon.pokemon;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,6 +11,9 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	private static final int REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS = 404;
 
+	private Messenger mService;
+	private ServiceConnection mServiceConnection;
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
 	private long mLastSensorUpdate;
@@ -73,10 +80,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 					Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
 							Float.parseFloat(charSequence.toString()));
 				}
-				Intent intent = new Intent(MainActivity.this, SensorOverlayService.class);
-				intent.putExtras(SensorOverlayService.createThresholdUpdateBundle(
-						Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD)));
-				startService(intent);
+
+				if (mService != null) {
+					try {
+						mService.send(SensorOverlayService.createThresholdUpdateMessage(
+								Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD)));
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 
 			@Override
@@ -298,12 +310,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	}
 
 	private void startSensorListening() {
-		startService(new Intent(this, SensorOverlayService.class));
+		if (mServiceConnection != null) {
+			unbindService(mServiceConnection);
+		}
+
+		Intent intent = new Intent(this, SensorOverlayService.class);
+		mServiceConnection = new ServiceConnection() {
+
+			@Override
+			public void onServiceConnected(ComponentName className, IBinder binder) {
+				mService = new Messenger(binder);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName className) {
+				mService = null;
+			}
+		};
+		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
 	private void stopSensorListening() {
-		stopService(new Intent(this, SensorOverlayService.class));
+		unbindService(mServiceConnection);
+		mServiceConnection = null;
 		mSensorManager.unregisterListener(this, mSensor);
 	}
 
@@ -312,9 +343,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		long currentTime = System.currentTimeMillis();
 		if ((currentTime - mLastSensorUpdate) > mMinimumTimeInterval) {
 			mLastSensorUpdate = currentTime;
-			Intent intent = new Intent(this, SensorOverlayService.class);
-			intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
-			startService(intent);
+			if (mService != null) {
+				try {
+					mService.send(SensorOverlayService.createSensorEventMessage(sensorEvent));
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

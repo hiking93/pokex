@@ -1,12 +1,17 @@
 package go.pokemon.pokemon;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.IBinder;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -30,6 +35,8 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 	private Context mContext;
+	private ServiceConnection mServiceConnection;
+	private Messenger mService;
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
 	private Object mThisObject;
@@ -98,12 +105,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										"\nmPlayerLongitude = " +
 										Utils.toDecimalString(mPlayerLongitude));
 
-						mSensorManager.registerListener(Cool.this, mSensor,
-								SensorManager.SENSOR_DELAY_NORMAL);
-
-						Intent intent = new Intent();
-						intent.setComponent(SensorOverlayService.getComponentName());
-						mContext.startService(intent);
+						startSensorListening();
 					}
 				});
 
@@ -116,10 +118,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onPause");
 
-						mSensorManager.unregisterListener(Cool.this, mSensor);
-						Intent intent = new Intent();
-						intent.setComponent(SensorOverlayService.getComponentName());
-						mContext.stopService(intent);
+						stopSensorListening();
 					}
 				});
 
@@ -138,6 +137,36 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						return null;
 					}
 				});
+	}
+
+	private void startSensorListening() {
+		if (mServiceConnection != null) {
+			mContext.unbindService(mServiceConnection);
+		}
+
+		Intent intent = new Intent();
+		intent.setComponent(SensorOverlayService.getComponentName());
+		mServiceConnection = new ServiceConnection() {
+
+			@Override
+			public void onServiceConnected(ComponentName className, IBinder binder) {
+				mService = new Messenger(binder);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName className) {
+				mService = null;
+			}
+		};
+		mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+		mSensorManager.registerListener(Cool.this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+
+	private void stopSensorListening() {
+		mContext.unbindService(mServiceConnection);
+		mServiceConnection = null;
+		mSensorManager.unregisterListener(this, mSensor);
 	}
 
 	@Override
@@ -167,10 +196,14 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 					isPositionChanged = true;
 				}
 
-				Intent intent = new Intent();
-				intent.putExtras(SensorOverlayService.createSensorEventBundle(sensorEvent));
-				intent.setComponent(SensorOverlayService.getComponentName());
-				mContext.startService(intent);
+				if (mService != null) {
+					try {
+						mService.send(
+								SensorOverlayService.createSensorEventMessage(sensorEvent));
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
 
 				if (isPositionChanged) {
 					gotoPlace(mPlayerLatitude, mPlayerLongitude);
@@ -193,9 +226,13 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 		XposedHelpers.callMethod(mThisObject, "nativeLocationUpdate", mLocation, mWhateverArray,
 				mContext);
 
-		Intent intent = new Intent();
-		intent.putExtras(SensorOverlayService.createLocationUpdateBundle(latitude, longitude));
-		intent.setComponent(SensorOverlayService.getComponentName());
-		mContext.startService(intent);
+		if (mService != null) {
+			try {
+				mService.send(
+						SensorOverlayService.createLocationUpdateMessage(latitude, longitude));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
