@@ -14,6 +14,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -45,9 +48,11 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 	private float mPlayerLatitude, mPlayerLongitude;
 	private float mSensorThreshold;
 	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
-	private long mLastSensorUpdate;
 	private int mSensorUpdateInterval;
 	private int[] mWhateverArray;
+
+	private long mLastSensorUpdate;
+	private boolean mIsSensorEnabled = true;
 
 	@Override
 	public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -105,6 +110,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										"\nmPlayerLongitude = " +
 										Utils.toDecimalString(mPlayerLongitude));
 
+						EventBus.getDefault().register(Cool.this);
 						startSensorListening();
 					}
 				});
@@ -118,6 +124,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onPause");
 
+						EventBus.getDefault().unregister(Cool.this);
 						stopSensorListening();
 					}
 				});
@@ -137,6 +144,12 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 						return null;
 					}
 				});
+	}
+
+	@Subscribe
+	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
+		Log.d("poked", "event = " + event);
+		mIsSensorEnabled = event.enabled;
 	}
 
 	private void startSensorListening() {
@@ -171,6 +184,10 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
+		if (!mIsSensorEnabled) {
+			return;
+		}
+
 		Sensor sensor = sensorEvent.sensor;
 		if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 			float sensorX = sensorEvent.values[0];
@@ -198,8 +215,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 				if (mService != null) {
 					try {
-						mService.send(
-								SensorOverlayService.createSensorEventMessage(sensorEvent));
+						mService.send(SensorOverlayService.createSensorEventMessage(sensorEvent));
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}

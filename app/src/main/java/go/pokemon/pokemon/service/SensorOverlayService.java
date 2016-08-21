@@ -15,7 +15,11 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.DecimalFormat;
 
@@ -35,11 +39,21 @@ public class SensorOverlayService extends Service {
 	private static final int MESSAGE_LOCATION_UPDATE = 2;
 	private static final int MESSAGE_THRESHOLD_UPDATE = 3;
 
+	public class SensorSwitchToggleEvent {
+
+		public boolean enabled;
+
+		public SensorSwitchToggleEvent(boolean enabled) {
+			this.enabled = enabled;
+		}
+	}
+
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
 	@BindView(R.id.textView_latitude) TextView mLatitudeTextView;
 	@BindView(R.id.textView_longitude) TextView mLongitudeTextView;
 	@BindView(R.id.sensorView) SensorView mSensorView;
+	@BindView(R.id.switch_enable_sensor) Switch mEnableSensorSwitch;
 
 	private WindowManager mWindowManager;
 	private View mRootView;
@@ -227,6 +241,14 @@ public class SensorOverlayService extends Service {
 		});
 
 		mSensorView.setThreshold(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD));
+		mEnableSensorSwitch
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+						EventBus.getDefault().post(new SensorSwitchToggleEvent(checked));
+					}
+				});
 	}
 
 	@Override

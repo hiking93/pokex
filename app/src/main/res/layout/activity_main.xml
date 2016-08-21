@@ -17,7 +17,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Sensor Threshold (m/s^2)"/>
+			android:text="@string/sensor_threshold"/>
 
 		<EditText
 			android:id="@+id/editText_sensor_threshold"
@@ -30,7 +30,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Sensor update interval (ms)"/>
+			android:text="@string/sensor_update_interval"/>
 
 		<EditText
 			android:id="@+id/editText_update_interval"
@@ -43,7 +43,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Move distance multiplier (long, lat) (per m/s^2)"/>
+			android:text="@string/move_distance_multiplier"/>
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -73,7 +73,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Respawn location (long, lat)"/>
+			android:text="@string/respawn_location"/>
 
 		<LinearLayout
 			android:layout_width="match_parent"

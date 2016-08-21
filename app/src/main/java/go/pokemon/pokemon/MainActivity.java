@@ -18,9 +18,13 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,8 +47,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	private ServiceConnection mServiceConnection;
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
+
+	private int mSensorUpdateInterval;
 	private long mLastSensorUpdate;
-	private int mMinimumTimeInterval;
+	private boolean mIsSensorEnabled = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-		mMinimumTimeInterval = Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL);
+		mSensorUpdateInterval = Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL);
 	}
 
 	private void setUpViews() {
@@ -125,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 				} else {
 					Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
 				}
-				mMinimumTimeInterval = Prefs.getInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
+				mSensorUpdateInterval = Prefs.getInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
 			}
 
 			@Override
@@ -292,6 +298,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		super.onResume();
 
 		checkToEnableOverlay();
+		EventBus.getDefault().register(this);
+	}
+
+	@Subscribe
+	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
+		Log.d("poked", "event = " + event);
+		mIsSensorEnabled = event.enabled;
 	}
 
 	@Override
@@ -305,8 +318,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	@Override
 	protected void onPause() {
-		super.onPause();
+		EventBus.getDefault().unregister(this);
 		stopSensorListening();
+
+		super.onPause();
 	}
 
 	private void startSensorListening() {
@@ -340,8 +355,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
+		if (!mIsSensorEnabled) {
+			return;
+		}
+
 		long currentTime = System.currentTimeMillis();
-		if ((currentTime - mLastSensorUpdate) > mMinimumTimeInterval) {
+		if ((currentTime - mLastSensorUpdate) > mSensorUpdateInterval) {
 			mLastSensorUpdate = currentTime;
 			if (mService != null) {
 				try {
