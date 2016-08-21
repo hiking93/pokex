@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	}
 
 	private void initValues() {
-		HermesEventBus.getDefault().init(this);
-
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 

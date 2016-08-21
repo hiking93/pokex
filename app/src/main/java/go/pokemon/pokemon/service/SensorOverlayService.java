@@ -103,6 +103,8 @@ public class SensorOverlayService extends Service {
 	}
 
 	private void initValues() {
+		HermesEventBus.getDefault().init(this);
+
 		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 		mSensorFormat = new DecimalFormat("0.00");
 		mSensorFormat.setPositivePrefix("+");

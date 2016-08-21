@@ -111,10 +111,10 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										"\nmPlayerLongitude = " +
 										Utils.toDecimalString(mPlayerLongitude));
 
+						startSensorListening();
 						HermesEventBus.getDefault().connectApp(mContext, "go.pokemon.pokemon");
 						HermesEventBus.getDefault().register(Cool.this);
 						Log.w("PokeEventBus", "registered!");
-						startSensorListening();
 					}
 				});
 
