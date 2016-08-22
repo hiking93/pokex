@@ -5,7 +5,8 @@
               android:layout_height="wrap_content"
               android:background="@drawable/overlay_debug_background"
               android:orientation="vertical"
-              android:padding="@dimen/margin_small">
+              android:padding="@dimen/margin_small"
+              android:theme="@style/AppTheme">
 
 	<TextView
 		android:id="@+id/textView_sensor_x"

@@ -178,7 +178,7 @@ public class SensorOverlayService extends Service {
 		boolean sensorOverThreshold =
 				sensorX * sensorX + sensorY * sensorY >= sensorThreshold * sensorThreshold;
 		int sensorTextColor = ContextCompat.getColor(this,
-				sensorOverThreshold ? R.color.yellow_500 : R.color.white_text_secondary);
+				sensorOverThreshold ? R.color.colorAccent : R.color.white_text_secondary);
 		mSensorXTextView.setTextColor(sensorTextColor);
 		mSensorYTextView.setTextColor(sensorTextColor);
 

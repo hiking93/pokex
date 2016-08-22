@@ -16,8 +16,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -73,40 +71,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	private void setUpViews() {
 		mSensorThresholdEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD)));
-		mSensorThresholdEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (!Utils.isFloat(charSequence)) {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD);
-				} else {
-					Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
-							Float.parseFloat(charSequence.toString()));
-				}
-
-				if (mService != null) {
-					try {
-						mService.send(SensorOverlayService.createThresholdUpdateMessage(
-								Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD)));
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mSensorThresholdEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (Utils.isFloat(value)) {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
+								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD);
+					}
+
+					if (mService != null) {
+						try {
+							mService.send(SensorOverlayService.createThresholdUpdateMessage(
+									Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD)));
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+					}
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_SENSOR_THRESHOLD)));
 				}
@@ -121,12 +107,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
 					String value = ((EditText) view).getText().toString();
-					if (!Utils.isFloat(value)) {
-						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
-					} else {
+					if (Utils.isFloat(value)) {
 						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X,
 								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
 					}
+
 					mSensorCalibrationX =
 							Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
 
@@ -144,12 +131,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
 					String value = ((EditText) view).getText().toString();
-					if (!Utils.isFloat(value)) {
-						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
-					} else {
+					if (Utils.isFloat(value)) {
 						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y,
 								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
 					}
+
 					mSensorCalibrationY =
 							Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
 
@@ -161,35 +149,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 		mUpdateIntervalEditText
 				.setText(Utils.toDecimalString(Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL)));
-		mUpdateIntervalEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (Utils.isInt(charSequence)) {
-					Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
-							Integer.parseInt(charSequence.toString()));
-				} else if (Utils.isFloat(charSequence)) {
-					Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
-							(int) Float.parseFloat(charSequence.toString()));
-				} else {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
-				}
-				mSensorUpdateInterval = Prefs.getInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mUpdateIntervalEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (Utils.isInt(value)) {
+						Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
+								Integer.parseInt(value));
+					} else if (Utils.isFloat(value)) {
+						Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
+								(int) Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
+					}
+
+					mSensorUpdateInterval =
+							Prefs.getInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getInt(view.getContext(), Prefs.KEY_UPDATE_INTERVAL)));
 				}
@@ -198,31 +176,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 		mMoveLatitudeMultiplierEditText.setText(
 				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LAT)));
-		mMoveLatitudeMultiplierEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (!Utils.isFloat(charSequence)) {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT);
-				} else {
-					Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
-							Float.parseFloat(charSequence.toString()));
-				}
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mMoveLatitudeMultiplierEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (Utils.isFloat(value)) {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
+								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT);
+					}
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_MOVE_MULTIPLIER_LAT)));
 				}
@@ -231,31 +197,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 		mMoveLongitudeMultiplierEditText.setText(
 				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_MOVE_MULTIPLIER_LONG)));
-		mMoveLongitudeMultiplierEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (!Utils.isFloat(charSequence)) {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG);
-				} else {
-					Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
-							Float.parseFloat(charSequence.toString()));
-				}
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mMoveLongitudeMultiplierEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (Utils.isFloat(value)) {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
+								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG);
+					}
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_MOVE_MULTIPLIER_LONG)));
 				}
@@ -264,31 +218,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 		mRespawnLatitudeEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LAT)));
-		mRespawnLatitudeEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (!Utils.isFloat(charSequence)) {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LAT);
-				} else {
-					Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
-							Float.parseFloat(charSequence.toString()));
-				}
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mRespawnLatitudeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (!Utils.isFloat(value)) {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LAT);
+					} else {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
+								Float.parseFloat(value));
+					}
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_RESPAWN_LAT)));
 				}
@@ -297,31 +239,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 		mRespawnLongitudeEditText
 				.setText(Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_RESPAWN_LONG)));
-		mRespawnLongitudeEditText.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				if (!Utils.isFloat(charSequence)) {
-					Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LONG);
-				} else {
-					Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
-							Float.parseFloat(charSequence.toString()));
-				}
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-			}
-		});
 		mRespawnLongitudeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (Utils.isFloat(value)) {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
+								Float.parseFloat(value));
+					} else {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LONG);
+					}
+
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_RESPAWN_LONG)));
 				}

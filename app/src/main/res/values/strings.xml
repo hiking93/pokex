@@ -1,11 +1,13 @@
 <resources>
-	<string name="app_name">Pokehack</string>
+	<string name="app_name">PokeX</string>
 
-	<string name="sensor_threshold">感應器門檻 (m/s^2)</string>
+	<string name="sensor_threshold">感應器門檻（m/s&#178;）</string>
 	<string name="sensor_calibration">感應器校正</string>
-	<string name="sensor_update_interval">感應器更新間隔 (ms)</string>
-	<string name="move_distance_multiplier">移動速度 (每 m/s^2 度數)</string>
+	<string name="sensor_update_interval">感應器更新間隔（毫秒）</string>
+	<string name="move_distance_multiplier">移動速度（每 m/s&#178; 度數）</string>
 	<string name="respawn_location">重生點</string>
 
 	<string name="enable_sensor">啟用</string>
+
+	<string name="settings_saved">已儲存設定</string>
 </resources>

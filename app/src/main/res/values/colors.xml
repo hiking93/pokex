@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorPrimary">@color/blue_800</color>
-	<color name="colorPrimaryDark">@color/blue_900</color>
-	<color name="colorAccent">@color/light_blue_A700</color>
+	<color name="colorPrimary">@color/teal_800</color>
+	<color name="colorPrimaryDark">@color/teal_900</color>
+	<color name="colorAccent">@color/orange_300</color>
+	<color name="colorWindowBackground">@color/blue_grey_900</color>
 
 	<!-- Material Design -->
 	<color name="red_50">#ffebee</color>

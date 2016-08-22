@@ -4,9 +4,11 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+import go.pokemon.pokemon.R;
 import go.pokemon.pokemon.lib.Constant;
 import go.pokemon.pokemon.lib.Utils;
 
@@ -24,6 +26,7 @@ public class SensorView extends View {
 	private int mSmoothingDuration = 100;
 
 	private Paint mPaint;
+	private int mActiveColor, mActiveColorSecondary;
 
 	public SensorView(Context context) {
 		super(context);
@@ -43,6 +46,8 @@ public class SensorView extends View {
 	private void initValues() {
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
+		mActiveColor = ContextCompat.getColor(getContext(), R.color.colorAccent);
+		mActiveColorSecondary = mActiveColor & 0x33ffffff;
 	}
 
 	public float getThreshold() {
@@ -122,7 +127,7 @@ public class SensorView extends View {
 
 		// Outer (max)
 		float outerRadius = width * .45f;
-		mPaint.setColor(overThreshold ? 0x33ffeb3b : 0x33ffffff);
+		mPaint.setColor(overThreshold ? mActiveColorSecondary : 0x33ffffff);
 		mPaint.setStyle(Paint.Style.FILL);
 		canvas.drawCircle(width / 2, height / 2, outerRadius, mPaint);
 		mPaint.setColor(0xb3ffffff);
@@ -135,7 +140,7 @@ public class SensorView extends View {
 		mPaint.setColor(0x33000000);
 		mPaint.setStyle(Paint.Style.FILL);
 		canvas.drawCircle(width / 2, height / 2, thresholdRadius, mPaint);
-		mPaint.setColor(0xffffeb3b);
+		mPaint.setColor(mActiveColor);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeWidth(Utils.convertDpToPixel(getContext(), 2));
 		canvas.drawCircle(width / 2, height / 2, thresholdRadius, mPaint);
