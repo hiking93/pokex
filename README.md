@@ -6,7 +6,7 @@
 # PokeX
 PokeX is an Xposed module to control Pokémon GO player location by acceleration sensor.
 
-![Preview](http://i.imgur.com/pNzUl8b.png)
+![Preview](http://i.imgur.com/ffovtTW.png)
 
 ## Features
 - Control player location by acceleration sensor
