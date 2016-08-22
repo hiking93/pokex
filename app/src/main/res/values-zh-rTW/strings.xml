@@ -1,6 +1,5 @@
 <resources>
 	<string name="app_name">PokeX</string>
-	<string name="xposed_description">用加速度計控制 Pokémon GO</string>
 
 	<string name="grant_permission_overlay">請先授予權限以繪製浮動視窗</string>
 	<string name="setting_on_first_use">第一次使用請先進行設定</string>
