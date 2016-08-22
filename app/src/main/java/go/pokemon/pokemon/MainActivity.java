@@ -31,6 +31,8 @@ import go.pokemon.pokemon.service.SensorOverlayService;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 	@BindView(R.id.editText_sensor_threshold) EditText mSensorThresholdEditText;
+	@BindView(R.id.editText_sensor_calibration_x) EditText mSensorCalibrationXEditText;
+	@BindView(R.id.editText_sensor_calibration_y) EditText mSensorCalibrationYEditText;
 	@BindView(R.id.editText_update_interval) EditText mUpdateIntervalEditText;
 	@BindView(R.id.editText_move_latitude_multiplier) EditText mMoveLatitudeMultiplierEditText;
 	@BindView(R.id.editText_move_longitude_multiplier) EditText mMoveLongitudeMultiplierEditText;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	private int mSensorUpdateInterval;
 	private long mLastSensorUpdate;
 	private boolean mIsSensorEnabled = true;
+	private float mSensorCalibrationX, mSensorCalibrationY;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 		mSensorUpdateInterval = Prefs.getInt(this, Prefs.KEY_UPDATE_INTERVAL);
+		mSensorCalibrationX = Prefs.getFloat(this, Prefs.KEY_SENSOR_CALIBRATION_X);
+		mSensorCalibrationY = Prefs.getFloat(this, Prefs.KEY_SENSOR_CALIBRATION_Y);
 	}
 
 	private void setUpViews() {
@@ -104,6 +109,52 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 				if (!focused) {
 					((EditText) view).setText(Utils.toDecimalString(
 							Prefs.getFloat(view.getContext(), Prefs.KEY_SENSOR_THRESHOLD)));
+				}
+			}
+		});
+
+		mSensorCalibrationXEditText.setText(
+				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_CALIBRATION_X)));
+		mSensorCalibrationXEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (!Utils.isFloat(value)) {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
+					} else {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X,
+								Float.parseFloat(value));
+					}
+					mSensorCalibrationX =
+							Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
+
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_SENSOR_CALIBRATION_X)));
+				}
+			}
+		});
+
+		mSensorCalibrationYEditText.setText(
+				Utils.toDecimalString(Prefs.getFloat(this, Prefs.KEY_SENSOR_CALIBRATION_Y)));
+		mSensorCalibrationYEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View view, boolean focused) {
+				if (!focused) {
+					String value = ((EditText) view).getText().toString();
+					if (!Utils.isFloat(value)) {
+						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
+					} else {
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y,
+								Float.parseFloat(value));
+					}
+					mSensorCalibrationY =
+							Prefs.getFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
+
+					((EditText) view).setText(Utils.toDecimalString(
+							Prefs.getFloat(view.getContext(), Prefs.KEY_SENSOR_CALIBRATION_Y)));
 				}
 			}
 		});
@@ -359,7 +410,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			mLastSensorUpdate = currentTime;
 			if (mService != null) {
 				try {
-					mService.send(SensorOverlayService.createSensorEventMessage(sensorEvent));
+					mService.send(SensorOverlayService
+							.createSensorEventMessage(sensorEvent, mSensorCalibrationX,
+									mSensorCalibrationY));
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}

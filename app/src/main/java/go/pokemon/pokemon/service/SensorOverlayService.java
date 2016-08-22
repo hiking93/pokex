@@ -40,6 +40,7 @@ public class SensorOverlayService extends Service {
 
 	public static final int RESULT_SENSOR_SWITCH_TOGGLE = 100;
 
+	private View mRootView;
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
 	@BindView(R.id.textView_latitude) TextView mLatitudeTextView;
@@ -48,8 +49,6 @@ public class SensorOverlayService extends Service {
 	@BindView(R.id.switch_enable_sensor) Switch mEnableSensorSwitch;
 
 	private WindowManager mWindowManager;
-	private View mRootView;
-
 	private DecimalFormat mSensorFormat, mLocationFormat;
 
 	private ResultReceiver mResultReceiver;
@@ -150,13 +149,14 @@ public class SensorOverlayService extends Service {
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	public static Message createSensorEventMessage(SensorEvent sensorEvent) {
+	public static Message createSensorEventMessage(SensorEvent sensorEvent, float calibrationX,
+	                                               float calibrationY) {
 		float sensorX = sensorEvent.values[0];
 		float sensorY = sensorEvent.values[1];
 
 		Bundle bundle = new Bundle();
-		bundle.putDouble("sensorX", sensorX); // TODO Add pref
-		bundle.putDouble("sensorY", sensorY - 5); // For hand-held comfort TODO: Add pref
+		bundle.putDouble("sensorX", sensorX - calibrationX);
+		bundle.putDouble("sensorY", sensorY - calibrationY);
 
 		Message message = Message.obtain();
 		message.what = MESSAGE_SENSOR_EVENT;

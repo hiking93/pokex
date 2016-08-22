@@ -21,6 +21,8 @@ public class Prefs {
 	public static String KEY_MOVE_MULTIPLIER_LONG = "KEY_MOVE_MULTIPLIER_LONG";
 	public static String KEY_RESPAWN_LAT = "KEY_RESPAWN_LAT";
 	public static String KEY_RESPAWN_LONG = "KEY_RESPAWN_LONG";
+	public static String KEY_SENSOR_CALIBRATION_X = "KEY_SENSOR_CALIBRATION_X";
+	public static String KEY_SENSOR_CALIBRATION_Y = "KEY_SENSOR_CALIBRATION_Y";
 
 	private static Map<String, Object> mDefaultValueMap;
 	private static SharedPreferences mSharedPreferences;
@@ -41,6 +43,8 @@ public class Prefs {
 		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00015f);
 		mDefaultValueMap.put(KEY_RESPAWN_LAT, 25.044194f);
 		mDefaultValueMap.put(KEY_RESPAWN_LONG, 121.553897f);
+		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_X, 0f);
+		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_Y, 3f);
 	}
 
 	public static void refresh(Context context) {
@@ -81,7 +85,7 @@ public class Prefs {
 		} else if (obj instanceof Double) {
 			defVal = ((Double) obj).intValue();
 		} else {
-			throw new ClassCastException("Unsupported class: " + obj.getClass().getName());
+			defVal = 0;
 		}
 		return defVal;
 	}
@@ -116,7 +120,7 @@ public class Prefs {
 		} else if (obj instanceof Double) {
 			defVal = ((Double) obj).floatValue();
 		} else {
-			throw new ClassCastException("Unsupported class: " + obj.getClass().getName());
+			defVal = 0f;
 		}
 		return defVal;
 	}

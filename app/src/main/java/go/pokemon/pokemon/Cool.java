@@ -44,6 +44,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 	private float mPlayerLatitude, mPlayerLongitude;
 	private float mSensorThreshold;
+	private float mSensorCalibrationX, mSensorCalibrationY;
 	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
 	private int mSensorUpdateInterval;
 	private int[] mWhateverArray;
@@ -86,10 +87,13 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onResume");
 
-						// Update params
-						Prefs.refreshX(mContext);
+						Prefs.refreshX(mContext); // Update params
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mSensorUpdateInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
+						mSensorCalibrationX =
+								Prefs.getXInt(mContext, Prefs.KEY_SENSOR_CALIBRATION_X);
+						mSensorCalibrationY =
+								Prefs.getXInt(mContext, Prefs.KEY_SENSOR_CALIBRATION_Y);
 						mMoveDistanceLatitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
 						mMoveDistanceLongitude =
@@ -194,8 +198,8 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				mLastSensorUpdate = currentTime;
 				boolean isPositionChanged = false;
 
-				float calibratedX = -sensorX; // TODO: Add pref
-				float calibratedY = -sensorY + 5; // For hand-held comfort TODO: Add pref
+				float calibratedX = -sensorX + mSensorCalibrationX;
+				float calibratedY = -sensorY + mSensorCalibrationY;
 
 				if (calibratedX * calibratedX + calibratedY * calibratedY >=
 						mSensorThreshold * mSensorThreshold) {
@@ -211,7 +215,9 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 				if (mService != null) {
 					try {
-						mService.send(SensorOverlayService.createSensorEventMessage(sensorEvent));
+						mService.send(SensorOverlayService
+								.createSensorEventMessage(sensorEvent, mSensorCalibrationX,
+										mSensorCalibrationY));
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}
