@@ -27,7 +27,7 @@
 		android:textSize="12sp"
 		tools:text="Sensor Y: 4.02"/>
 
-	<go.pokemon.pokemon.module.SensorView
+	<com.sparkslab.pokex.module.SensorView
 		android:id="@+id/sensorView"
 		android:layout_width="102dp"
 		android:layout_height="102dp"

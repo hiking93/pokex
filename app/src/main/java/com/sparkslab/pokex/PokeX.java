@@ -1,4 +1,4 @@
-package go.pokemon.pokemon;
+package com.sparkslab.pokex;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,15 +14,16 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.sparkslab.pokex.lib.Constant;
+import com.sparkslab.pokex.lib.Prefs;
+import com.sparkslab.pokex.lib.Utils;
+import com.sparkslab.pokex.service.SensorOverlayService;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import go.pokemon.pokemon.lib.Constant;
-import go.pokemon.pokemon.lib.Prefs;
-import go.pokemon.pokemon.lib.Utils;
-import go.pokemon.pokemon.service.SensorOverlayService;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -32,7 +33,7 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  *
  * @author Created by pauline on 7/15/16.
  */
-public class Cool implements IXposedHookLoadPackage, SensorEventListener {
+public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 
 	private Context mContext;
 	private ServiceConnection mServiceConnection;
@@ -173,7 +174,7 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 		};
 		mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
-		mSensorManager.registerListener(Cool.this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(PokeX.this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
 	private void stopSensorListening() {

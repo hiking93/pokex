@@ -16,11 +16,11 @@ android {
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        applicationId "go.pokemon.pokemon"
+        applicationId "com.sparkslab.pokex"
         minSdkVersion 23
         targetSdkVersion 24
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.2.2"
     }
     buildTypes {
         release {

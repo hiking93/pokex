@@ -1,16 +1,18 @@
-package go.pokemon.pokemon.service;
+package com.sparkslab.pokex.service;
 
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.SensorEvent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ResultReceiver;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -19,14 +21,17 @@ import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.sparkslab.pokex.MainActivity;
+import com.sparkslab.pokex.R;
+import com.sparkslab.pokex.lib.Prefs;
+import com.sparkslab.pokex.module.SensorView;
 
 import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import go.pokemon.pokemon.R;
-import go.pokemon.pokemon.lib.Prefs;
-import go.pokemon.pokemon.module.SensorView;
 
 /**
  * Service to create overlay
@@ -89,8 +94,8 @@ public class SensorOverlayService extends Service {
 	}
 
 	private static ComponentName getComponentName() {
-		return new ComponentName("go.pokemon.pokemon",
-				"go.pokemon.pokemon.service.SensorOverlayService");
+		return new ComponentName("com.sparkslab.pokex",
+				"com.sparkslab.pokex.service.SensorOverlayService");
 	}
 
 	private static Bundle getReceiverExtras(final ResultCallback callback) {
@@ -127,8 +132,7 @@ public class SensorOverlayService extends Service {
 		super.onCreate();
 
 		initValues();
-		inflateViews();
-		setUpViews();
+		setUpWindow();
 	}
 
 	private void initValues() {
@@ -137,11 +141,6 @@ public class SensorOverlayService extends Service {
 		mSensorFormat.setPositivePrefix("+");
 		mLocationFormat = new DecimalFormat("0.00000");
 		mLocationFormat.setPositivePrefix("+");
-	}
-
-	private void inflateViews() {
-		mRootView = View.inflate(this, R.layout.overlay_debug, null);
-		ButterKnife.bind(this, mRootView);
 	}
 
 	@Override
@@ -226,8 +225,18 @@ public class SensorOverlayService extends Service {
 		mSensorView.setThreshold(threshold);
 	}
 
-	private void setUpViews() {
-		// Set up window
+	private void setUpWindow() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+			Toast.makeText(this, R.string.setting_on_first_use, Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+			return;
+		}
+
+		mRootView = View.inflate(this, R.layout.overlay_debug, null);
+		ButterKnife.bind(this, mRootView);
+
 		WindowManager.LayoutParams params =
 				new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
 						WindowManager.LayoutParams.WRAP_CONTENT,

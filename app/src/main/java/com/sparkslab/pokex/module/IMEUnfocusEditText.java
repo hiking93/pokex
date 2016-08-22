@@ -1,4 +1,4 @@
-package go.pokemon.pokemon.module;
+package com.sparkslab.pokex.module;
 
 import android.content.Context;
 import android.util.AttributeSet;

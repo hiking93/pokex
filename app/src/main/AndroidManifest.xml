@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="go.pokemon.pokemon"
+<manifest package="com.sparkslab.pokex"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -32,10 +32,6 @@
 
 		<service
 			android:name=".service.SensorOverlayService"
-			android:exported="true"/>
-
-		<service
-			android:name="xiaofei.library.hermes.HermesService$HermesService0"
 			android:exported="true"/>
 
 	</application>

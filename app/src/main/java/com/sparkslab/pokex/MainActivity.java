@@ -1,4 +1,4 @@
-package go.pokemon.pokemon;
+package com.sparkslab.pokex;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,11 +20,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.sparkslab.pokex.lib.Prefs;
+import com.sparkslab.pokex.lib.Utils;
+import com.sparkslab.pokex.service.SensorOverlayService;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import go.pokemon.pokemon.lib.Prefs;
-import go.pokemon.pokemon.lib.Utils;
-import go.pokemon.pokemon.service.SensorOverlayService;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -36,8 +37,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	@BindView(R.id.editText_move_longitude_multiplier) EditText mMoveLongitudeMultiplierEditText;
 	@BindView(R.id.editText_respawn_latitude) EditText mRespawnLatitudeEditText;
 	@BindView(R.id.editText_respawn_longitude) EditText mRespawnLongitudeEditText;
-
-	private static final int REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS = 404;
 
 	private Messenger mService;
 	private ServiceConnection mServiceConnection;
@@ -261,10 +260,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	private void checkToEnableOverlay() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-			Toast.makeText(this, "Enable drawing over other apps", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, R.string.grant_permission_overlay, Toast.LENGTH_LONG).show();
 			Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
 					Uri.parse("package:" + getPackageName()));
-			startActivityForResult(intent, REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS);
+			startActivity(intent);
 			return;
 		}
 		startSensorListening();
@@ -275,15 +274,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		super.onResume();
 
 		checkToEnableOverlay();
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == REQUEST_PERMISSION_DRAW_OVER_OTHER_APPS) {
-			checkToEnableOverlay();
-		}
 	}
 
 	@Override
@@ -324,8 +314,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 	}
 
 	private void stopSensorListening() {
-		unbindService(mServiceConnection);
-		mServiceConnection = null;
+		if (mServiceConnection != null) {
+			unbindService(mServiceConnection);
+			mServiceConnection = null;
+		}
 		mSensorManager.unregisterListener(this, mSensor);
 	}
 

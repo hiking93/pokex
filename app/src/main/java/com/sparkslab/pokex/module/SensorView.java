@@ -1,4 +1,4 @@
-package go.pokemon.pokemon.module;
+package com.sparkslab.pokex.module;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -8,9 +8,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import go.pokemon.pokemon.R;
-import go.pokemon.pokemon.lib.Constant;
-import go.pokemon.pokemon.lib.Utils;
+import com.sparkslab.pokex.R;
+import com.sparkslab.pokex.lib.Constant;
+import com.sparkslab.pokex.lib.Utils;
 
 /**
  * View to show sensor status

@@ -1,0 +1,14 @@
+<resources>
+	<string name="app_name">PokeX</string>
+
+	<string name="grant_permission_overlay">請先授予權限以繪製浮動視窗</string>
+	<string name="setting_on_first_use">第一次使用請先進行設定</string>
+
+	<string name="sensor_threshold">感應器門檻（m/s&#178;）</string>
+	<string name="sensor_calibration">感應器校正（m/s&#178;）</string>
+	<string name="sensor_update_interval">感應器更新間隔（毫秒）</string>
+	<string name="move_distance_multiplier">移動速度（每 m/s&#178; 度數）</string>
+	<string name="respawn_location">重生點</string>
+
+	<string name="enable_sensor">啟用</string>
+</resources>

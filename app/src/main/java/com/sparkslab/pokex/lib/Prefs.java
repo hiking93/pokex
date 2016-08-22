@@ -1,4 +1,4 @@
-package go.pokemon.pokemon.lib;
+package com.sparkslab.pokex.lib;
 
 import android.content.Context;
 import android.content.SharedPreferences;

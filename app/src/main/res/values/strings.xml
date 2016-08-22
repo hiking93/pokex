@@ -1,13 +1,14 @@
 <resources>
 	<string name="app_name">PokeX</string>
 
-	<string name="sensor_threshold">感應器門檻（m/s&#178;）</string>
-	<string name="sensor_calibration">感應器校正</string>
-	<string name="sensor_update_interval">感應器更新間隔（毫秒）</string>
-	<string name="move_distance_multiplier">移動速度（每 m/s&#178; 度數）</string>
-	<string name="respawn_location">重生點</string>
+	<string name="grant_permission_overlay">Grant permission to enable floating window</string>
+	<string name="setting_on_first_use">Configure before first use</string>
+	
+	<string name="sensor_threshold">Sensor threshold (m/s&#178;)</string>
+	<string name="sensor_calibration">Sensor calibration (m/s&#178;)</string>
+	<string name="sensor_update_interval">Sensor update interval (ms)</string>
+	<string name="move_distance_multiplier">Move speed（angle per m/s&#178;）</string>
+	<string name="respawn_location">Respawn location</string>
 
-	<string name="enable_sensor">啟用</string>
-
-	<string name="settings_saved">已儲存設定</string>
+	<string name="enable_sensor">Enable</string>
 </resources>
