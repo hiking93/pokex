@@ -4,12 +4,12 @@
 [PokeX](https://github.com/hiking93/PokeX) is intended for academic purposes and should not be used to play the game PokemonGo as it violates the TOS and is unfair to the community. Use the module at your own risk.
 
 # PokeX
-PokeX is an Xposed module to control Pokémon GO player location by acceleration sensor.
+PokeX is an Xposed module to control Pokémon GO player location by accelerometer.
 
 ![Preview](http://i.imgur.com/ffovtTW.png)
 
 ## Features
-- Control player location by acceleration sensor
+- Control player location by accelerometer
 - Floating info window
 - Sensor enable/disable switch
 - Configurations
