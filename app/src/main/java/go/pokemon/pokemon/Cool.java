@@ -14,9 +14,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -26,7 +23,6 @@ import go.pokemon.pokemon.lib.Constant;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.lib.Utils;
 import go.pokemon.pokemon.service.SensorOverlayService;
-import xiaofei.library.hermeseventbus.HermesEventBus;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -112,8 +108,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 										Utils.toDecimalString(mPlayerLongitude));
 
 						startSensorListening();
-						HermesEventBus.getDefault().connectApp(mContext, "go.pokemon.pokemon");
-						HermesEventBus.getDefault().register(Cool.this);
 						Log.w("PokeEventBus", "registered!");
 					}
 				});
@@ -127,8 +121,6 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 
 						Log.d(Constant.TAG, "onPause");
 
-						HermesEventBus.getDefault().unregister(Cool.this);
-						Log.e("PokeEventBus", "unregistered!");
 						stopSensorListening();
 					}
 				});
@@ -150,19 +142,19 @@ public class Cool implements IXposedHookLoadPackage, SensorEventListener {
 				});
 	}
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
-		Log.d("PokeEventBus", "event = " + event);
-		mIsSensorEnabled = event.enabled;
-	}
-
 	private void startSensorListening() {
 		if (mServiceConnection != null) {
 			mContext.unbindService(mServiceConnection);
 		}
 
-		Intent intent = new Intent();
-		intent.setComponent(SensorOverlayService.getComponentName());
+		SensorOverlayService.ResultCallback callback = new SensorOverlayService.ResultCallback() {
+
+			@Override
+			public void onSensorSwitchToggle(boolean enabled) {
+				mIsSensorEnabled = enabled;
+			}
+		};
+		Intent intent = SensorOverlayService.getServiceIntent(callback);
 		mServiceConnection = new ServiceConnection() {
 
 			@Override

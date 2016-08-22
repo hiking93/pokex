@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.ResultReceiver;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -26,7 +27,6 @@ import butterknife.ButterKnife;
 import go.pokemon.pokemon.R;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.module.SensorView;
-import xiaofei.library.hermeseventbus.HermesEventBus;
 
 /**
  * Service to create overlay
@@ -38,14 +38,7 @@ public class SensorOverlayService extends Service {
 	private static final int MESSAGE_LOCATION_UPDATE = 2;
 	private static final int MESSAGE_THRESHOLD_UPDATE = 3;
 
-	public class SensorSwitchToggleEvent {
-
-		public boolean enabled;
-
-		public SensorSwitchToggleEvent(boolean enabled) {
-			this.enabled = enabled;
-		}
-	}
+	public static final int RESULT_SENSOR_SWITCH_TOGGLE = 100;
 
 	@BindView(R.id.textView_sensor_x) TextView mSensorXTextView;
 	@BindView(R.id.textView_sensor_y) TextView mSensorYTextView;
@@ -59,6 +52,7 @@ public class SensorOverlayService extends Service {
 
 	private DecimalFormat mSensorFormat, mLocationFormat;
 
+	private ResultReceiver mResultReceiver;
 	private final Messenger mMessenger = new Messenger(new Handler() {
 
 		@Override
@@ -83,13 +77,49 @@ public class SensorOverlayService extends Service {
 		}
 	});
 
-	public static ComponentName getComponentName() {
+	public interface ResultCallback {
+
+		void onSensorSwitchToggle(boolean enabled);
+	}
+
+	public static Intent getServiceIntent(ResultCallback callback) {
+		Intent intent = new Intent();
+		intent.setComponent(SensorOverlayService.getComponentName());
+		intent.putExtras(SensorOverlayService.getReceiverExtras(callback));
+		return intent;
+	}
+
+	private static ComponentName getComponentName() {
 		return new ComponentName("go.pokemon.pokemon",
 				"go.pokemon.pokemon.service.SensorOverlayService");
 	}
 
+	private static Bundle getReceiverExtras(final ResultCallback callback) {
+		Bundle bundle = new Bundle();
+		bundle.putParcelable("receiver", new ResultReceiver(null) {
+
+			@Override
+			protected void onReceiveResult(int resultCode, Bundle resultData) {
+				super.onReceiveResult(resultCode, resultData);
+
+				switch (resultCode) {
+					case SensorOverlayService.RESULT_SENSOR_SWITCH_TOGGLE: {
+						callback.onSensorSwitchToggle(resultData.getBoolean("enabled"));
+					}
+					break;
+				}
+			}
+		});
+		return bundle;
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
+		Object extra = intent.getParcelableExtra("receiver");
+		if (extra instanceof ResultReceiver) {
+			mResultReceiver = ((ResultReceiver) extra);
+		}
+
 		return mMessenger.getBinder();
 	}
 
@@ -103,8 +133,6 @@ public class SensorOverlayService extends Service {
 	}
 
 	private void initValues() {
-		HermesEventBus.getDefault().init(this);
-
 		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 		mSensorFormat = new DecimalFormat("0.00");
 		mSensorFormat.setPositivePrefix("+");
@@ -247,7 +275,18 @@ public class SensorOverlayService extends Service {
 
 					@Override
 					public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-						HermesEventBus.getDefault().post(new SensorSwitchToggleEvent(checked));
+						if (mResultReceiver != null) {
+							Bundle bundle = new Bundle();
+							bundle.putBoolean("enabled", checked);
+							mResultReceiver.send(RESULT_SENSOR_SWITCH_TOGGLE, bundle);
+
+							float alpha = checked ? 1f : 0.38f;
+							mSensorXTextView.setAlpha(alpha);
+							mSensorYTextView.setAlpha(alpha);
+							mSensorView.setAlpha(alpha);
+							mLatitudeTextView.setAlpha(alpha);
+							mLongitudeTextView.setAlpha(alpha);
+						}
 					}
 				});
 	}

@@ -18,20 +18,15 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import go.pokemon.pokemon.lib.Prefs;
 import go.pokemon.pokemon.lib.Utils;
 import go.pokemon.pokemon.service.SensorOverlayService;
-import xiaofei.library.hermeseventbus.HermesEventBus;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -299,13 +294,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		super.onResume();
 
 		checkToEnableOverlay();
-		HermesEventBus.getDefault().register(this);
-	}
-
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void onEvent(SensorOverlayService.SensorSwitchToggleEvent event) {
-		Log.d("poked", "event = " + event);
-		mIsSensorEnabled = event.enabled;
 	}
 
 	@Override
@@ -319,7 +307,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 	@Override
 	protected void onPause() {
-		HermesEventBus.getDefault().unregister(this);
 		stopSensorListening();
 
 		super.onPause();
@@ -330,7 +317,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			unbindService(mServiceConnection);
 		}
 
-		Intent intent = new Intent(this, SensorOverlayService.class);
+		SensorOverlayService.ResultCallback callback = new SensorOverlayService.ResultCallback() {
+
+			@Override
+			public void onSensorSwitchToggle(boolean enabled) {
+				mIsSensorEnabled = enabled;
+			}
+		};
+		Intent intent = SensorOverlayService.getServiceIntent(callback);
 		mServiceConnection = new ServiceConnection() {
 
 			@Override

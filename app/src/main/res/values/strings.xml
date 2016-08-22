@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">寶可夢設定</string>
+	<string name="app_name">Pokehack</string>
 
 	<string name="sensor_threshold">感應器門檻 (m/s^2)</string>
 	<string name="sensor_update_interval">感應器更新間隔 (ms)</string>
