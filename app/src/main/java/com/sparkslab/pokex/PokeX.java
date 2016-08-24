@@ -113,7 +113,6 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 										Utils.toDecimalString(mPlayerLongitude));
 
 						startSensorListening();
-						Log.w("PokeEventBus", "registered!");
 					}
 				});
 
@@ -197,7 +196,6 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 			long currentTime = System.currentTimeMillis();
 			if ((currentTime - mLastSensorUpdate) > mSensorUpdateInterval) {
 				mLastSensorUpdate = currentTime;
-				boolean isPositionChanged = false;
 
 				float calibratedX = -sensorX + mSensorCalibrationX;
 				float calibratedY = -sensorY + mSensorCalibrationY;
@@ -211,7 +209,6 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 					mPlayerLatitude += mMoveDistanceLatitude * sensorUpdateIntervalSecond *
 							(calibratedY > 0 ? calibratedY - mSensorThreshold :
 									calibratedY + mSensorThreshold);
-					isPositionChanged = true;
 				}
 
 				if (mService != null) {
@@ -224,9 +221,7 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 					}
 				}
 
-				if (isPositionChanged) {
-					gotoPlace(mPlayerLatitude, mPlayerLongitude);
-				}
+				gotoPlace(mPlayerLatitude, mPlayerLongitude);
 			}
 		}
 	}
