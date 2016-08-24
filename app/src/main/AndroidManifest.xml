@@ -16,7 +16,7 @@
 			android:value="true"/>
 		<meta-data
 			android:name="xposeddescription"
-			android:value="@string/xposed_description"/>
+			android:value="Control Pokémon GO with accelerometer"/>
 		<meta-data
 			android:name="xposedminversion"
 			android:value="53"/>

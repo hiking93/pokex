@@ -22,6 +22,9 @@ PokeX is an Xposed module to control Pokémon GO player location with accelerome
 ## Known Issues
 - Control sensitivity drops while GPS signal is bad
 
+## Download
+- [Xposed Module Repository](http://repo.xposed.info/module/com.sparkslab.pokex)
+
 ## Credits
 - [davidyen1124](https://github.com/davidyen1124) for the idea and the original module prototype
 
