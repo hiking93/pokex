@@ -19,8 +19,8 @@ android {
         applicationId "com.sparkslab.pokex"
         minSdkVersion 23
         targetSdkVersion 24
-        versionCode 5
-        versionName "1.2.2"
+        versionCode 6
+        versionName "1.2.3"
     }
     buildTypes {
         release {

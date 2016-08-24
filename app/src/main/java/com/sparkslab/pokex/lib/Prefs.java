@@ -15,14 +15,16 @@ import de.robv.android.xposed.XSharedPreferences;
  */
 public class Prefs {
 
-	public static String KEY_SENSOR_THRESHOLD = "KEY_SENSOR_THRESHOLD"; // in m/s^2
-	public static String KEY_UPDATE_INTERVAL = "KEY_UPDATE_INTERVAL"; // in ms
-	public static String KEY_MOVE_MULTIPLIER_LAT = "KEY_MOVE_MULTIPLIER_LAT";
-	public static String KEY_MOVE_MULTIPLIER_LONG = "KEY_MOVE_MULTIPLIER_LONG";
-	public static String KEY_RESPAWN_LAT = "KEY_RESPAWN_LAT";
-	public static String KEY_RESPAWN_LONG = "KEY_RESPAWN_LONG";
-	public static String KEY_SENSOR_CALIBRATION_X = "KEY_SENSOR_CALIBRATION_X";
-	public static String KEY_SENSOR_CALIBRATION_Y = "KEY_SENSOR_CALIBRATION_Y";
+	public static final String KEY_SENSOR_THRESHOLD = "KEY_SENSOR_THRESHOLD"; // in m/s^2
+	public static final String KEY_UPDATE_INTERVAL = "KEY_UPDATE_INTERVAL"; // in ms
+	public static final String KEY_MOVE_MULTIPLIER_LAT = "KEY_MOVE_MULTIPLIER_LAT";
+	public static final String KEY_MOVE_MULTIPLIER_LONG = "KEY_MOVE_MULTIPLIER_LONG";
+	public static final String KEY_RESPAWN_LAT = "KEY_RESPAWN_LAT";
+	public static final String KEY_RESPAWN_LONG = "KEY_RESPAWN_LONG";
+	public static final String KEY_SENSOR_CALIBRATION_X = "KEY_SENSOR_CALIBRATION_X";
+	public static final String KEY_SENSOR_CALIBRATION_Y = "KEY_SENSOR_CALIBRATION_Y";
+
+	private static final String DEFAULT_PREF_NAME = "pokemon";
 
 	private static Map<String, Object> mDefaultValueMap;
 	private static SharedPreferences mSharedPreferences;
@@ -30,9 +32,9 @@ public class Prefs {
 
 	private static void refresh(Context context, boolean x) {
 		if (x) {
-			mXSharedPreferences = new XSharedPreferences("go.pokemon.pokemon", "pokemon");
+			mXSharedPreferences = new XSharedPreferences("com.sparkslab.pokex", DEFAULT_PREF_NAME);
 		} else {
-			mSharedPreferences = context.getSharedPreferences("pokemon",
+			mSharedPreferences = context.getSharedPreferences(DEFAULT_PREF_NAME,
 					Context.MODE_WORLD_WRITEABLE | Context.MODE_WORLD_READABLE);
 		}
 
