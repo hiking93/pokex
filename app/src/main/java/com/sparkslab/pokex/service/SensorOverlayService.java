@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.sparkslab.pokex.MainActivity;
 import com.sparkslab.pokex.R;
+import com.sparkslab.pokex.lib.FirebaseAnalyticsHelper;
 import com.sparkslab.pokex.lib.Prefs;
 import com.sparkslab.pokex.module.SensorView;
 
@@ -35,7 +36,8 @@ import butterknife.ButterKnife;
 
 /**
  * Service to create overlay
- * Created by hiking on 2016/7/17.
+ *
+ * @author Created by hiking on 2016/7/17.
  */
 public class SensorOverlayService extends Service {
 
@@ -118,20 +120,25 @@ public class SensorOverlayService extends Service {
 	}
 
 	@Override
-	public IBinder onBind(Intent intent) {
-		Object extra = intent.getParcelableExtra("receiver");
-		if (extra instanceof ResultReceiver) {
-			mResultReceiver = ((ResultReceiver) extra);
-		}
-		return mMessenger.getBinder();
-	}
-
-	@Override
 	public void onCreate() {
 		super.onCreate();
 
 		initValues();
 		setUpWindow();
+
+		FirebaseAnalyticsHelper.onCreateService();
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		Object extra = intent.getParcelableExtra("receiver");
+		if (extra instanceof ResultReceiver) {
+			mResultReceiver = ((ResultReceiver) extra);
+		}
+
+		FirebaseAnalyticsHelper.onBindService();
+
+		return mMessenger.getBinder();
 	}
 
 	private void initValues() {

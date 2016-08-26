@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.sparkslab.pokex.lib.FirebaseAnalyticsHelper;
 import com.sparkslab.pokex.lib.Prefs;
 import com.sparkslab.pokex.lib.Utils;
 import com.sparkslab.pokex.service.SensorOverlayService;
@@ -27,6 +28,11 @@ import com.sparkslab.pokex.service.SensorOverlayService;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Configuration screen
+ *
+ * @author Created by pauline on 7/15/16.
+ */
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 	@BindView(R.id.editText_sensor_threshold) EditText mSensorThresholdEditText;
@@ -56,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 		initValues();
 		ButterKnife.bind(this);
 		setUpViews();
+
+		FirebaseAnalyticsHelper.onAppOpen();
 	}
 
 	private void initValues() {
