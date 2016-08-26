@@ -6,7 +6,7 @@ package com.sparkslab.pokex.lib;
  * @author Created by hiking on 2016/7/17.
  */
 public class Constant {
-	public static String TAG = "Pokebug";
+	public static String TAG = "PokeX";
 
 	/**
 	 * Experimental flags

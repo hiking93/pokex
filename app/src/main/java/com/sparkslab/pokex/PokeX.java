@@ -177,8 +177,11 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 	}
 
 	private void stopSensorListening() {
-		mContext.unbindService(mServiceConnection);
-		mServiceConnection = null;
+		if (mServiceConnection != null) {
+			mContext.unbindService(mServiceConnection);
+			mServiceConnection = null;
+		}
+		mContext.stopService(new Intent(mContext, SensorOverlayService.class));
 		mSensorManager.unregisterListener(this, mSensor);
 	}
 
@@ -197,18 +200,24 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 			if ((currentTime - mLastSensorUpdate) > mSensorUpdateInterval) {
 				mLastSensorUpdate = currentTime;
 
-				float calibratedX = -sensorX + mSensorCalibrationX;
-				float calibratedY = -sensorY + mSensorCalibrationY;
+				double calibratedX = -sensorX + mSensorCalibrationX;
+				double calibratedY = -sensorY + mSensorCalibrationY;
 
 				if (calibratedX * calibratedX + calibratedY * calibratedY >=
 						mSensorThreshold * mSensorThreshold) {
 					float sensorUpdateIntervalSecond = mSensorUpdateInterval / 1000f;
+					double vectorLength =
+							Math.sqrt(calibratedX * calibratedX + calibratedY * calibratedY);
+					double effectiveLength = vectorLength - mSensorThreshold;
+					double effectiveRatio = effectiveLength / vectorLength;
+
+					double effectiveX = calibratedX * effectiveRatio;
 					mPlayerLongitude += mMoveDistanceLongitude * sensorUpdateIntervalSecond *
-							(calibratedX > 0 ? calibratedX - mSensorThreshold :
-									calibratedX + mSensorThreshold);
+							effectiveX;
+
+					double effectiveY = calibratedY * effectiveRatio;
 					mPlayerLatitude += mMoveDistanceLatitude * sensorUpdateIntervalSecond *
-							(calibratedY > 0 ? calibratedY - mSensorThreshold :
-									calibratedY + mSensorThreshold);
+							effectiveY;
 				}
 
 				if (mService != null) {

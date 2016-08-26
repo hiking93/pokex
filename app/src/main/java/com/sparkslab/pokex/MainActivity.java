@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			unbindService(mServiceConnection);
 			mServiceConnection = null;
 		}
+		stopService(new Intent(this, SensorOverlayService.class));
 		mSensorManager.unregisterListener(this, mSensor);
 	}
 
