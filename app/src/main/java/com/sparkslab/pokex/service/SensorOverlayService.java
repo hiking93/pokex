@@ -173,8 +173,10 @@ public class SensorOverlayService extends Service {
 		double sensorY = bundle.getDouble("sensorY");
 		float sensorThreshold = Prefs.getFloat(this, Prefs.KEY_SENSOR_THRESHOLD);
 
-		mSensorXTextView.setText("Sensor X: " + mSensorFormat.format(sensorX));
-		mSensorYTextView.setText("Sensor Y: " + mSensorFormat.format(sensorY));
+		mSensorXTextView
+				.setText(getString(R.string.floating_sensor_x, mSensorFormat.format(sensorX)));
+		mSensorYTextView
+				.setText(getString(R.string.floating_sensor_y, mSensorFormat.format(sensorY)));
 
 		boolean sensorOverThreshold =
 				sensorX * sensorX + sensorY * sensorY >= sensorThreshold * sensorThreshold;
@@ -203,9 +205,11 @@ public class SensorOverlayService extends Service {
 		double latitude = bundle.getDouble("latitude");
 		double longitude = bundle.getDouble("longitude");
 
-		mLatitudeTextView.setText("LAT:" + mLocationFormat.format(latitude));
+		mLatitudeTextView
+				.setText(getString(R.string.floating_lat, mLocationFormat.format(latitude)));
 		mLatitudeTextView.setVisibility(View.VISIBLE);
-		mLongitudeTextView.setText("LNG:" + mLocationFormat.format(longitude));
+		mLongitudeTextView
+				.setText(getString(R.string.floating_lng, mLocationFormat.format(longitude)));
 		mLongitudeTextView.setVisibility(View.VISIBLE);
 	}
 

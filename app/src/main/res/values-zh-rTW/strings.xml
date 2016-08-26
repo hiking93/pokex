@@ -10,5 +10,9 @@
 	<string name="move_distance_multiplier">移動速度（每 m/s&#178; 度數）</string>
 	<string name="respawn_location">重生點</string>
 
+	<string name="floating_sensor_x">感測器 X：%s</string>
+	<string name="floating_sensor_y">感測器 Y：%s</string>
+	<string name="floating_lat">緯度：%s</string>
+	<string name="floating_lng">經度：%s</string>
 	<string name="enable_sensor">啟用</string>
 </resources>

@@ -10,5 +10,9 @@
 	<string name="move_distance_multiplier">Move speed（angle per m/s&#178;）</string>
 	<string name="respawn_location">Respawn location</string>
 
+	<string name="floating_sensor_x">Sensor X: %s</string>
+	<string name="floating_sensor_y">Sensor Y: %s</string>
+	<string name="floating_lat">LAT: %s</string>
+	<string name="floating_lng">LNG: %s</string>
 	<string name="enable_sensor">Enable</string>
 </resources>
