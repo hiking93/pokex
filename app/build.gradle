@@ -20,8 +20,8 @@ android {
         applicationId "com.sparkslab.pokex"
         minSdkVersion 23
         targetSdkVersion 24
-        versionCode 8
-        versionName "1.4"
+        versionCode 9
+        versionName "1.4.1"
     }
     buildTypes {
         release {
