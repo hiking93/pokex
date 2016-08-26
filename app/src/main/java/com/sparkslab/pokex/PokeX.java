@@ -238,7 +238,6 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 					}
 				}
 
-				Log.d("pokex","goto"+mPlayerLatitude+", "+mPlayerLongitude);
 				gotoPlace(mPlayerLatitude, mPlayerLongitude);
 			}
 		}
