@@ -1,7 +1,5 @@
 package com.sparkslab.pokex.service;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -15,7 +13,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.ResultReceiver;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -126,37 +123,7 @@ public class SensorOverlayService extends Service {
 		if (extra instanceof ResultReceiver) {
 			mResultReceiver = ((ResultReceiver) extra);
 		}
-
-		showNotification();
-
 		return mMessenger.getBinder();
-	}
-
-	private void showNotification() {
-		Intent intent = new Intent(this, SensorOverlayService.class);
-		intent.putExtra("mode", "toggleVisibility");
-		PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-		NotificationCompat.Builder builder =
-				new NotificationCompat.Builder(this).setContentTitle("Test").setContentText("Test")
-						.setSmallIcon(R.mipmap.ic_launcher).setOngoing(true)
-						.setContentIntent(pendingIntent);
-		NotificationManager notificationManager =
-				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.notify(123, builder.build());
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent != null && intent.hasExtra("mode")) {
-			switch (intent.getStringExtra("mode")) {
-				case "toggleVisibility": {
-					mRootView.setVisibility(
-							mRootView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-				}
-				break;
-			}
-		}
-		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
@@ -330,10 +297,6 @@ public class SensorOverlayService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
-		NotificationManager notificationManager =
-				(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancel(0);
 
 		if (mRootView != null) {
 			mWindowManager.removeView(mRootView);
