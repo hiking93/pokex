@@ -106,7 +106,7 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 						if (BuildConfig.DEBUG) {
 							Log.d(Constant.TAG, String.format("Calibration: %f, %f\nSpeed: %f, %f",
 									mSensorCalibrationX, mSensorCalibrationY, mMoveDistanceLatitude,
-									mPlayerLongitude));
+									mMoveDistanceLongitude));
 						}
 
 						startSensorListening();
