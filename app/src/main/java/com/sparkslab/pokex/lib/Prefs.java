@@ -32,10 +32,11 @@ public class Prefs {
 
 	private static void refresh(Context context, boolean x) {
 		if (x) {
-			mXSharedPreferences = new XSharedPreferences("com.sparkslab.pokex", DEFAULT_PREF_NAME);
+			mXSharedPreferences =
+					new XSharedPreferences(Prefs.class.getPackage().getName(), DEFAULT_PREF_NAME);
 		} else {
-			mSharedPreferences = context.getSharedPreferences(DEFAULT_PREF_NAME,
-					Context.MODE_WORLD_WRITEABLE | Context.MODE_WORLD_READABLE);
+			mSharedPreferences =
+					context.getSharedPreferences(DEFAULT_PREF_NAME, Context.MODE_WORLD_READABLE);
 		}
 
 		mDefaultValueMap = new HashMap<>();
