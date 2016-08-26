@@ -16,7 +16,6 @@ import android.util.Log;
 
 import com.sparkslab.pokex.lib.Constant;
 import com.sparkslab.pokex.lib.Prefs;
-import com.sparkslab.pokex.lib.Utils;
 import com.sparkslab.pokex.service.SensorOverlayService;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -73,6 +72,11 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
 						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
 
+						if (BuildConfig.DEBUG) {
+							Log.d(Constant.TAG, String.format("Location: %f, %f", mPlayerLatitude,
+									mPlayerLongitude));
+						}
+
 						mSensorManager =
 								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
 						mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -92,25 +96,18 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
 						mSensorUpdateInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
 						mSensorCalibrationX =
-								Prefs.getXInt(mContext, Prefs.KEY_SENSOR_CALIBRATION_X);
+								Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_CALIBRATION_X);
 						mSensorCalibrationY =
-								Prefs.getXInt(mContext, Prefs.KEY_SENSOR_CALIBRATION_Y);
+								Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_CALIBRATION_Y);
 						mMoveDistanceLatitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
 						mMoveDistanceLongitude =
 								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LONG);
-						Log.d(Constant.TAG,
-								"mSensorThreshold = " + Utils.toDecimalString(mSensorThreshold) +
-										"\nmSensorUpdateInterval = " +
-										Utils.toDecimalString(mSensorUpdateInterval) +
-										"\nmMoveDistanceLatitude = " +
-										Utils.toDecimalString(mMoveDistanceLatitude) +
-										"\nmMoveDistanceLongitude = " +
-										Utils.toDecimalString(mMoveDistanceLongitude) +
-										"\nmPlayerLatitude = " +
-										Utils.toDecimalString(mPlayerLatitude) +
-										"\nmPlayerLongitude = " +
-										Utils.toDecimalString(mPlayerLongitude));
+						if (BuildConfig.DEBUG) {
+							Log.d(Constant.TAG, String.format("Calibration: %f, %f\nSpeed: %f, %f",
+									mSensorCalibrationX, mSensorCalibrationY, mMoveDistanceLatitude,
+									mPlayerLongitude));
+						}
 
 						startSensorListening();
 					}
