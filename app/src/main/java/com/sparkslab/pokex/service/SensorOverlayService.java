@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.sparkslab.pokex.MainActivity;
 import com.sparkslab.pokex.R;
+import com.sparkslab.pokex.lib.Constant;
 import com.sparkslab.pokex.lib.FirebaseAnalyticsHelper;
 import com.sparkslab.pokex.lib.Prefs;
 import com.sparkslab.pokex.module.SensorView;
@@ -290,12 +291,13 @@ public class SensorOverlayService extends Service {
 							bundle.putBoolean("enabled", checked);
 							mResultReceiver.send(RESULT_SENSOR_SWITCH_TOGGLE, bundle);
 
-							float alpha = checked ? 1f : 0.38f;
+							float alpha = checked ? 1f : Constant.DISABLED_TRANSPARENCY;
 							mSensorXTextView.setAlpha(alpha);
 							mSensorYTextView.setAlpha(alpha);
-							mSensorView.setAlpha(alpha);
 							mLatitudeTextView.setAlpha(alpha);
 							mLongitudeTextView.setAlpha(alpha);
+
+							mSensorView.setEnabled(checked);
 						}
 					}
 				});

@@ -68,6 +68,18 @@ public class SensorView extends View {
 		invalidate();
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+
+		float alpha = enabled ? 1f : Constant.DISABLED_TRANSPARENCY;
+		this.setAlpha(alpha);
+
+		if (enabled) {
+			mLastSensorUpdateTime = System.currentTimeMillis();
+		}
+	}
+
 	public void setSensorValues(float x, float y) {
 		mXValue = x;
 		mYValue = y;
