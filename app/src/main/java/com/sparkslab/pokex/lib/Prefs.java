@@ -2,11 +2,10 @@ package com.sparkslab.pokex.lib;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import de.robv.android.xposed.XSharedPreferences;
 
 /**
  * Shared preference helper
@@ -28,53 +27,37 @@ public class Prefs {
 
 	private static Map<String, Object> mDefaultValueMap;
 	private static SharedPreferences mSharedPreferences;
-	private static XSharedPreferences mXSharedPreferences;
 
-	private static void refresh(Context context, boolean x) {
-		if (x) {
-			mXSharedPreferences =
-					new XSharedPreferences(Prefs.class.getPackage().getName(), DEFAULT_PREF_NAME);
-		} else {
-			mSharedPreferences =
-					context.getSharedPreferences(DEFAULT_PREF_NAME, Context.MODE_WORLD_READABLE);
-		}
+	private static void init(Context context) {
+		mSharedPreferences = context.getSharedPreferences(DEFAULT_PREF_NAME, Context.MODE_PRIVATE);
 
 		mDefaultValueMap = new HashMap<>();
 		mDefaultValueMap.put(KEY_SENSOR_THRESHOLD, 2f);
 		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 100);
 		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00015f);
 		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00015f);
-		mDefaultValueMap.put(KEY_RESPAWN_LAT, 25.044194f);
-		mDefaultValueMap.put(KEY_RESPAWN_LONG, 121.553897f);
+		mDefaultValueMap.put(KEY_RESPAWN_LAT, 25.03895f);
+		mDefaultValueMap.put(KEY_RESPAWN_LONG, 121.55894f);
 		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_X, 0f);
 		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_Y, 3f);
 	}
 
-	public static void refresh(Context context) {
-		refresh(context, false);
-	}
-
-	public static void refreshX(Context context) {
-		refresh(context, true);
-	}
-
-	public static SharedPreferences getPrefs(Context context) {
-		if (mSharedPreferences == null) {
-			refresh(context, false);
-		}
-		return mSharedPreferences;
-	}
-
-	public static SharedPreferences.Editor getPrefEditor(Context context) {
-		if (mSharedPreferences == null) {
-			refresh(context, false);
-		}
-		return mSharedPreferences.edit();
+	public static Bundle getAll(Context context) {
+		Bundle bundle = new Bundle();
+		bundle.putFloat(KEY_SENSOR_THRESHOLD, getFloat(context, KEY_SENSOR_THRESHOLD));
+		bundle.putInt(KEY_UPDATE_INTERVAL, getInt(context, KEY_UPDATE_INTERVAL));
+		bundle.putFloat(KEY_MOVE_MULTIPLIER_LONG, getFloat(context, KEY_MOVE_MULTIPLIER_LONG));
+		bundle.putFloat(KEY_MOVE_MULTIPLIER_LAT, getFloat(context, KEY_MOVE_MULTIPLIER_LAT));
+		bundle.putFloat(KEY_RESPAWN_LAT, getFloat(context, KEY_RESPAWN_LAT));
+		bundle.putFloat(KEY_RESPAWN_LONG, getFloat(context, KEY_RESPAWN_LONG));
+		bundle.putFloat(KEY_SENSOR_CALIBRATION_X, getFloat(context, KEY_SENSOR_CALIBRATION_X));
+		bundle.putFloat(KEY_SENSOR_CALIBRATION_Y, getFloat(context, KEY_SENSOR_CALIBRATION_Y));
+		return bundle;
 	}
 
 	public static void setToDefault(Context context, String key) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		mSharedPreferences.edit().remove(key).apply();
 	}
@@ -95,21 +78,14 @@ public class Prefs {
 
 	public static int getInt(Context context, String key) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		return getIntValue(mSharedPreferences.getInt(key, getIntValue(mDefaultValueMap.get(key))));
 	}
 
-	public static int getXInt(Context context, String key) {
-		if (mXSharedPreferences == null) {
-			refresh(context, true);
-		}
-		return getIntValue(mXSharedPreferences.getInt(key, getIntValue(mDefaultValueMap.get(key))));
-	}
-
 	public static void setInt(Context context, String key, int value) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		mSharedPreferences.edit().putInt(key, value).apply();
 	}
@@ -130,44 +106,29 @@ public class Prefs {
 
 	public static float getFloat(Context context, String key) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		return getFloatValue(
 				mSharedPreferences.getFloat(key, getFloatValue(mDefaultValueMap.get(key))));
 	}
 
-	public static float getXFloat(Context context, String key) {
-		if (mXSharedPreferences == null) {
-			refresh(context, true);
-		}
-		return getFloatValue(
-				mXSharedPreferences.getFloat(key, getFloatValue(mDefaultValueMap.get(key))));
-	}
-
 	public static void setFloat(Context context, String key, float value) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		mSharedPreferences.edit().putFloat(key, value).apply();
 	}
 
 	public static String getString(Context context, String key) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		return mSharedPreferences.getString(key, (String) mDefaultValueMap.get(key));
 	}
 
-	public static String getXString(Context context, String key) {
-		if (mXSharedPreferences == null) {
-			refresh(context, true);
-		}
-		return mXSharedPreferences.getString(key, (String) mDefaultValueMap.get(key));
-	}
-
 	public static void setString(Context context, String key, String value) {
 		if (mSharedPreferences == null) {
-			refresh(context, false);
+			init(context);
 		}
 		mSharedPreferences.edit().putString(key, value).apply();
 	}

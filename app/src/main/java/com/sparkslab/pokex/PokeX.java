@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -16,6 +17,8 @@ import android.util.Log;
 
 import com.sparkslab.pokex.lib.Constant;
 import com.sparkslab.pokex.lib.Prefs;
+import com.sparkslab.pokex.lib.StringUtils;
+import com.sparkslab.pokex.service.PrefsService;
 import com.sparkslab.pokex.service.SensorOverlayService;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -39,14 +42,16 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 	private Messenger mService;
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
-	private Object mThisObject;
-	private Location mLocation;
 
+	private Bundle mPrefsBundle;
 	private float mPlayerLatitude, mPlayerLongitude;
 	private float mSensorThreshold;
 	private float mSensorCalibrationX, mSensorCalibrationY;
 	private float mMoveDistanceLatitude, mMoveDistanceLongitude;
 	private int mSensorUpdateInterval;
+
+	private Location mLocation;
+	private Object mThisObject;
 	private int[] mWhateverArray;
 
 	private long mLastSensorUpdate;
@@ -68,12 +73,33 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 						Log.d(Constant.TAG, "Constructor hooked");
 						mContext = (Context) param.args[0];
 
-						// Initial player position
-						mPlayerLatitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LAT);
-						mPlayerLongitude = Prefs.getXFloat(mContext, Prefs.KEY_RESPAWN_LONG);
+						mContext.startService(
+								PrefsService.getServiceIntent(new PrefsService.ResultCallback() {
 
-						Log.d(Constant.TAG, String.format("Location: %f, %f", mPlayerLatitude,
-								mPlayerLongitude));
+									@Override
+									public void onPrefsFetched(Bundle prefs) {
+										mPrefsBundle = prefs;
+										Log.d(Constant.TAG, StringUtils.toString(mPrefsBundle));
+
+										// Initial player position
+										mPlayerLatitude =
+												mPrefsBundle.getFloat(Prefs.KEY_RESPAWN_LAT);
+										mPlayerLongitude =
+												mPrefsBundle.getFloat(Prefs.KEY_RESPAWN_LONG);
+										mSensorThreshold =
+												mPrefsBundle.getFloat(Prefs.KEY_SENSOR_THRESHOLD);
+										mSensorUpdateInterval =
+												mPrefsBundle.getInt(Prefs.KEY_UPDATE_INTERVAL);
+										mSensorCalibrationX = mPrefsBundle
+												.getFloat(Prefs.KEY_SENSOR_CALIBRATION_X);
+										mSensorCalibrationY = mPrefsBundle
+												.getFloat(Prefs.KEY_SENSOR_CALIBRATION_Y);
+										mMoveDistanceLatitude = mPrefsBundle
+												.getFloat(Prefs.KEY_MOVE_MULTIPLIER_LAT);
+										mMoveDistanceLongitude = mPrefsBundle
+												.getFloat(Prefs.KEY_MOVE_MULTIPLIER_LONG);
+									}
+								}));
 
 						mSensorManager =
 								(SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -89,27 +115,6 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 						super.beforeHookedMethod(param);
 
 						Log.d(Constant.TAG, "onResume");
-
-						Prefs.refreshX(mContext); // Update params
-						mSensorThreshold = Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_THRESHOLD);
-						mSensorUpdateInterval = Prefs.getXInt(mContext, Prefs.KEY_UPDATE_INTERVAL);
-						mSensorCalibrationX =
-								Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_CALIBRATION_X);
-						mSensorCalibrationY =
-								Prefs.getXFloat(mContext, Prefs.KEY_SENSOR_CALIBRATION_Y);
-						mMoveDistanceLatitude =
-								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LAT);
-						mMoveDistanceLongitude =
-								Prefs.getXFloat(mContext, Prefs.KEY_MOVE_MULTIPLIER_LONG);
-						Log.d(Constant.TAG,
-								String.format("Sensor threshold: %f", mSensorThreshold));
-						Log.d(Constant.TAG,
-								String.format("Sensor update interval: %d", mSensorUpdateInterval));
-						Log.d(Constant.TAG,
-								String.format("Calibration: %f, %f", mSensorCalibrationX,
-										mSensorCalibrationY));
-						Log.d(Constant.TAG, String.format("Speed: %f, %f", mMoveDistanceLatitude,
-								mMoveDistanceLongitude));
 
 						startSensorListening();
 					}
@@ -184,9 +189,13 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 		mSensorManager.unregisterListener(this, mSensor);
 	}
 
+	private boolean isPrefsLoaded() {
+		return mPrefsBundle != null;
+	}
+
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
-		if (!mIsSensorEnabled) {
+		if (!mIsSensorEnabled || !isPrefsLoaded()) {
 			return;
 		}
 
@@ -229,6 +238,7 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 					}
 				}
 
+				Log.d("pokex","goto"+mPlayerLatitude+", "+mPlayerLongitude);
 				gotoPlace(mPlayerLatitude, mPlayerLongitude);
 			}
 		}

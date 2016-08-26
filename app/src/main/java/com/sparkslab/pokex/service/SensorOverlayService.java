@@ -110,7 +110,7 @@ public class SensorOverlayService extends Service {
 				super.onReceiveResult(resultCode, resultData);
 
 				switch (resultCode) {
-					case SensorOverlayService.RESULT_SENSOR_SWITCH_TOGGLE: {
+					case RESULT_SENSOR_SWITCH_TOGGLE: {
 						callback.onSensorSwitchToggle(resultData.getBoolean("enabled"));
 					}
 					break;

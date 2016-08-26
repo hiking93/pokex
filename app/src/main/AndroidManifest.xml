@@ -38,6 +38,10 @@
 			android:name=".service.SensorOverlayService"
 			android:exported="true"/>
 
+		<service
+			android:name=".service.PrefsService"
+			android:exported="true"/>
+
 	</application>
 
 </manifest>
