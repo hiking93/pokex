@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1061683684734",
+    "firebase_url": "https://pokex-421aa.firebaseio.com",
+    "project_id": "pokex-421aa",
+    "storage_bucket": "pokex-421aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061683684734:android:dd94557698935406",
+        "android_client_info": {
+          "package_name": "com.sparkslab.pokex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061683684734-pohgdtm9ute44nhub7c4485dr6e01s1p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sparkslab.pokex",
+            "certificate_hash": "9C1F019EBBA79F3F8E32D6BAD84BFACB8C9CC6F2"
+          }
+        },
+        {
+          "client_id": "1061683684734-b1kgctsa6dsmmcceeegl2fldem1m2nh7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDod3imyQGDxYtxesE1MGkt9DnUt42c-z8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061683684734-b1kgctsa6dsmmcceeegl2fldem1m2nh7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

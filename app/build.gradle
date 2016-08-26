@@ -10,6 +10,7 @@ buildscript {
 }
 
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 24
