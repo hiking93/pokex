@@ -3,6 +3,7 @@
 
 	<string name="grant_permission_overlay">Grant permission to enable floating window</string>
 	<string name="setting_on_first_use">Configure before first use</string>
+	<string name="invalid_value_reset">Invalid input value, reset to default</string>
 
 	<string name="sensor_threshold">Sensor threshold (m/s&#178;)</string>
 	<string name="sensor_calibration">Sensor calibration (m/s&#178;)</string>

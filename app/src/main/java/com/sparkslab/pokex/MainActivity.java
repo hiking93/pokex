@@ -83,11 +83,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_THRESHOLD);
 					}
 
@@ -113,11 +114,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_X);
 					}
 
@@ -137,11 +139,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_SENSOR_CALIBRATION_Y);
 					}
 
@@ -161,14 +164,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isInt(value)) {
-						Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
-								Integer.parseInt(value));
-					} else if (Utils.isFloat(value)) {
-						Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL,
-								(int) Float.parseFloat(value));
-					} else {
+					try {
+						int value = Integer.parseInt(((EditText) view).getText().toString());
+						Prefs.setInt(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_UPDATE_INTERVAL);
 					}
 
@@ -188,11 +189,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LAT);
 					}
 
@@ -209,11 +211,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_MOVE_MULTIPLIER_LONG);
 					}
 
@@ -230,12 +233,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (!Utils.isFloat(value)) {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LAT);
-					} else {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LAT,
-								Float.parseFloat(value));
 					}
 
 					((EditText) view).setText(Utils.toDecimalString(
@@ -251,11 +255,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 			@Override
 			public void onFocusChange(View view, boolean focused) {
 				if (!focused) {
-					String value = ((EditText) view).getText().toString();
-					if (Utils.isFloat(value)) {
-						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG,
-								Float.parseFloat(value));
-					} else {
+					try {
+						float value = Float.parseFloat(((EditText) view).getText().toString());
+						Prefs.setFloat(MainActivity.this, Prefs.KEY_RESPAWN_LONG, value);
+					} catch (Exception e) {
+						Toast.makeText(MainActivity.this, R.string.invalid_value_reset,
+								Toast.LENGTH_SHORT).show();
 						Prefs.setToDefault(MainActivity.this, Prefs.KEY_RESPAWN_LONG);
 					}
 

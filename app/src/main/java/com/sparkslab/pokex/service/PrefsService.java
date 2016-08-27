@@ -24,10 +24,12 @@ public class PrefsService extends Service {
 		void onPrefsFetched(Bundle prefs);
 	}
 
-	public static Intent getServiceIntent(ResultCallback callback) {
+	public static Intent getServiceIntent(@Nullable ResultCallback callback) {
 		Intent intent = new Intent();
 		intent.setComponent(PrefsService.getComponentName());
-		intent.putExtras(PrefsService.getReceiverExtras(callback));
+		if (callback != null) {
+			intent.putExtras(PrefsService.getReceiverExtras(callback));
+		}
 		return intent;
 	}
 
@@ -56,11 +58,14 @@ public class PrefsService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Object extra = intent.getParcelableExtra("receiver");
-		if (extra instanceof ResultReceiver) {
-			ResultReceiver resultReceiver = ((ResultReceiver) extra);
-			resultReceiver.send(RESULT_FETCHED_PREFS, Prefs.getAll(this));
+		if (intent != null) {
+			Object extra = intent.getParcelableExtra("receiver");
+			if (extra instanceof ResultReceiver) {
+				ResultReceiver resultReceiver = ((ResultReceiver) extra);
+				resultReceiver.send(RESULT_FETCHED_PREFS, Prefs.getAll(this));
+			}
 		}
+		stopSelf();
 		return super.onStartCommand(intent, flags, startId);
 	}
 

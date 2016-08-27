@@ -2,7 +2,6 @@ package com.sparkslab.pokex.lib;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import java.text.DecimalFormat;
@@ -16,16 +15,6 @@ public class Utils {
 
 	public static String toDecimalString(float value) {
 		return new DecimalFormat("0.######").format(value);
-	}
-
-	public static boolean isInt(CharSequence value) {
-		return !TextUtils.isEmpty(value) && TextUtils.isDigitsOnly(value);
-	}
-
-	public static boolean isFloat(CharSequence value) {
-		String string = value.toString();
-		return !TextUtils.isEmpty(string) && string.matches("\\-?\\d*\\.?\\d*") &&
-				!TextUtils.isEmpty(string.replaceAll("\\.|\\-", ""));
 	}
 
 	public static DisplayMetrics getDisplayMetrics(Context context) {
