@@ -89,10 +89,10 @@ public class SensorOverlayService extends Service {
 		void onSensorSwitchToggle(boolean enabled);
 	}
 
-	public static Intent getServiceIntent(ResultCallback callback) {
+	public static Intent getServiceIntent(boolean enabled, ResultCallback callback) {
 		Intent intent = new Intent();
 		intent.setComponent(SensorOverlayService.getComponentName());
-		intent.putExtras(SensorOverlayService.getReceiverExtras(callback));
+		intent.putExtras(SensorOverlayService.getReceiverExtras(enabled, callback));
 		return intent;
 	}
 
@@ -101,8 +101,9 @@ public class SensorOverlayService extends Service {
 				"com.sparkslab.pokex.service.SensorOverlayService");
 	}
 
-	private static Bundle getReceiverExtras(final ResultCallback callback) {
+	private static Bundle getReceiverExtras(boolean enabled, final ResultCallback callback) {
 		Bundle bundle = new Bundle();
+		bundle.putBoolean("enabled", enabled);
 		bundle.putParcelable("receiver", new ResultReceiver(null) {
 
 			@Override
@@ -132,10 +133,8 @@ public class SensorOverlayService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Object extra = intent.getParcelableExtra("receiver");
-		if (extra instanceof ResultReceiver) {
-			mResultReceiver = ((ResultReceiver) extra);
-		}
+		setSensorEnabled(intent.getBooleanExtra("enabled", true));
+		mResultReceiver = intent.getParcelableExtra("receiver");
 
 		FirebaseAnalyticsHelper.onBindService();
 
@@ -290,21 +289,29 @@ public class SensorOverlayService extends Service {
 
 					@Override
 					public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-						if (mResultReceiver != null) {
-							Bundle bundle = new Bundle();
-							bundle.putBoolean("enabled", checked);
-							mResultReceiver.send(RESULT_SENSOR_SWITCH_TOGGLE, bundle);
-
-							float alpha = checked ? 1f : Constant.DISABLED_TRANSPARENCY;
-							mSensorXTextView.setAlpha(alpha);
-							mSensorYTextView.setAlpha(alpha);
-							mLatitudeTextView.setAlpha(alpha);
-							mLongitudeTextView.setAlpha(alpha);
-
-							mSensorView.setEnabled(checked);
-						}
+						setSensorEnabled(checked);
 					}
 				});
+	}
+
+	private void setSensorEnabled(boolean enabled) {
+		if (mEnableSensorSwitch.isChecked() != enabled) {
+			mEnableSensorSwitch.setChecked(enabled);
+		}
+
+		float alpha = enabled ? 1f : Constant.DISABLED_TRANSPARENCY;
+		mSensorXTextView.setAlpha(alpha);
+		mSensorYTextView.setAlpha(alpha);
+		mLatitudeTextView.setAlpha(alpha);
+		mLongitudeTextView.setAlpha(alpha);
+
+		mSensorView.setEnabled(enabled);
+
+		if (mResultReceiver != null) {
+			Bundle bundle = new Bundle();
+			bundle.putBoolean("enabled", enabled);
+			mResultReceiver.send(RESULT_SENSOR_SWITCH_TOGGLE, bundle);
+		}
 	}
 
 	@Override

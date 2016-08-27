@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 				mIsSensorEnabled = enabled;
 			}
 		};
-		Intent intent = SensorOverlayService.getServiceIntent(callback);
+		Intent intent = SensorOverlayService.getServiceIntent(true, callback);
 		mServiceConnection = new ServiceConnection() {
 
 			@Override

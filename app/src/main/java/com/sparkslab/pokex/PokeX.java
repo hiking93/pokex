@@ -162,7 +162,7 @@ public class PokeX implements IXposedHookLoadPackage, SensorEventListener {
 				mIsSensorEnabled = enabled;
 			}
 		};
-		Intent intent = SensorOverlayService.getServiceIntent(callback);
+		Intent intent = SensorOverlayService.getServiceIntent(mIsSensorEnabled, callback);
 		mServiceConnection = new ServiceConnection() {
 
 			@Override
