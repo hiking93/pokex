@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Shared preference helper
  *
@@ -25,21 +22,21 @@ public class Prefs {
 
 	private static final String DEFAULT_PREF_NAME = "pokemon";
 
-	private static Map<String, Object> mDefaultValueMap;
+	private static Bundle mDefaultValues;
 	private static SharedPreferences mSharedPreferences;
 
-	private static void init(Context context) {
+	public static void init(Context context) {
 		mSharedPreferences = context.getSharedPreferences(DEFAULT_PREF_NAME, Context.MODE_PRIVATE);
 
-		mDefaultValueMap = new HashMap<>();
-		mDefaultValueMap.put(KEY_SENSOR_THRESHOLD, 2f);
-		mDefaultValueMap.put(KEY_UPDATE_INTERVAL, 100);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LONG, .00015f);
-		mDefaultValueMap.put(KEY_MOVE_MULTIPLIER_LAT, .00015f);
-		mDefaultValueMap.put(KEY_RESPAWN_LAT, 25.03895f);
-		mDefaultValueMap.put(KEY_RESPAWN_LONG, 121.55894f);
-		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_X, 0f);
-		mDefaultValueMap.put(KEY_SENSOR_CALIBRATION_Y, 3f);
+		mDefaultValues = new Bundle();
+		mDefaultValues.putFloat(KEY_SENSOR_THRESHOLD, 2f);
+		mDefaultValues.putInt(KEY_UPDATE_INTERVAL, 100);
+		mDefaultValues.putFloat(KEY_MOVE_MULTIPLIER_LONG, .00015f);
+		mDefaultValues.putFloat(KEY_MOVE_MULTIPLIER_LAT, .00015f);
+		mDefaultValues.putFloat(KEY_RESPAWN_LAT, 25.03895f);
+		mDefaultValues.putFloat(KEY_RESPAWN_LONG, 121.55894f);
+		mDefaultValues.putFloat(KEY_SENSOR_CALIBRATION_X, 0f);
+		mDefaultValues.putFloat(KEY_SENSOR_CALIBRATION_Y, 3f);
 	}
 
 	public static Bundle getAll(Context context) {
@@ -56,80 +53,34 @@ public class Prefs {
 	}
 
 	public static void setToDefault(Context context, String key) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
 		mSharedPreferences.edit().remove(key).apply();
 	}
 
-	public static int getIntValue(Object obj) {
-		int defVal;
-		if (obj instanceof Integer) {
-			defVal = (Integer) obj;
-		} else if (obj instanceof Float) {
-			defVal = ((Float) obj).intValue();
-		} else if (obj instanceof Double) {
-			defVal = ((Double) obj).intValue();
-		} else {
-			defVal = 0;
-		}
-		return defVal;
+	public static void setAllToDefault(Context context) {
+		mSharedPreferences.edit().clear().apply();
 	}
 
 	public static int getInt(Context context, String key) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
-		return getIntValue(mSharedPreferences.getInt(key, getIntValue(mDefaultValueMap.get(key))));
+		return mSharedPreferences.getInt(key, mDefaultValues.getInt(key));
 	}
 
 	public static void setInt(Context context, String key, int value) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
 		mSharedPreferences.edit().putInt(key, value).apply();
 	}
 
-	public static float getFloatValue(Object obj) {
-		float defVal;
-		if (obj instanceof Integer) {
-			defVal = ((Integer) obj).floatValue();
-		} else if (obj instanceof Float) {
-			defVal = (Float) obj;
-		} else if (obj instanceof Double) {
-			defVal = ((Double) obj).floatValue();
-		} else {
-			defVal = 0f;
-		}
-		return defVal;
-	}
-
 	public static float getFloat(Context context, String key) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
-		return getFloatValue(
-				mSharedPreferences.getFloat(key, getFloatValue(mDefaultValueMap.get(key))));
+		return mSharedPreferences.getFloat(key, mDefaultValues.getFloat(key));
 	}
 
 	public static void setFloat(Context context, String key, float value) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
 		mSharedPreferences.edit().putFloat(key, value).apply();
 	}
 
 	public static String getString(Context context, String key) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
-		return mSharedPreferences.getString(key, (String) mDefaultValueMap.get(key));
+		return mSharedPreferences.getString(key, mDefaultValues.getString(key));
 	}
 
 	public static void setString(Context context, String key, String value) {
-		if (mSharedPreferences == null) {
-			init(context);
-		}
 		mSharedPreferences.edit().putString(key, value).apply();
 	}
 }

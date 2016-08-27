@@ -16,4 +16,10 @@
 	<string name="floating_lat">緯度：%s</string>
 	<string name="floating_lng">經度：%s</string>
 	<string name="enable_sensor">啟用</string>
+
+	<string name="cancel">取消</string>
+
+	<string name="reset_all">全部重設</string>
+	<string name="reset_all_confirm_message">將全部設定恢復為原始狀態？</string>
+	<string name="reset">重設</string>
 </resources>

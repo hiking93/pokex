@@ -16,4 +16,10 @@
 	<string name="floating_lat">LAT: %s</string>
 	<string name="floating_lng">LNG: %s</string>
 	<string name="enable_sensor">Enable</string>
+
+	<string name="cancel">Cancel</string>
+
+	<string name="reset_all">Reset all</string>
+	<string name="reset_all_confirm_message">Reset all settings to default?</string>
+	<string name="reset">Reset</string>
 </resources>

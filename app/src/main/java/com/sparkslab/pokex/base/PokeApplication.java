@@ -3,6 +3,7 @@ package com.sparkslab.pokex.base;
 import android.app.Application;
 
 import com.sparkslab.pokex.lib.FirebaseAnalyticsHelper;
+import com.sparkslab.pokex.lib.Prefs;
 
 /**
  * Application to provide more functionality
@@ -15,6 +16,7 @@ public class PokeApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		Prefs.init(this);
 		FirebaseAnalyticsHelper.init(this);
 	}
 }
